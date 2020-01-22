@@ -20,73 +20,21 @@ edges. The main idea behind the filter can be summarized as follows:
 
 ##### Table 1. Summary of the loop filter decisions.
 
-<table>
-<tbody>
-<tr class="odd">
-<td><strong>Min TX size<br />
-across the edge</strong></td>
-<td><strong>Flat areas<br />
-around the edge</strong></td>
-<td><strong>Filter<br />
-(Luma)</strong></td>
-<td><strong>Filter_Size<br />
-(Luma)</strong></td>
-<td><strong>Filter<br />
-(Chroma)</strong></td>
-<td><strong>Filter_Size<br />
-(Chroma)</strong></td>
-</tr>
-<tr class="even">
-<td>&gt;=TX_8x8</td>
-<td>Yes</td>
-<td>Filter14 (13-tap)</td>
-<td>14</td>
-<td>Filter6 (5-tap)</td>
-<td>6</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>No</td>
-<td>Filter8 (7-tap)/ Filter4</td>
-<td>4</td>
-<td>Filter4</td>
-<td>4</td>
-</tr>
-<tr class="even">
-<td>TX_8x8</td>
-<td>Yes</td>
-<td>Filter8 (7-tap)</td>
-<td>8</td>
-<td>Filter6 (5-tap)</td>
-<td>6</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td>No</td>
-<td>Filter4</td>
-<td>4</td>
-<td>Filter4</td>
-<td>4</td>
-</tr>
-<tr class="even">
-<td>TX_4x4</td>
-<td>-</td>
-<td>Filter4</td>
-<td>4</td>
-<td>Filter4</td>
-<td>4</td>
-</tr>
-</tbody>
-</table>
+|**Min TX size across the edge**|**Flat areas around the edge**|**Filter (Luma)**|**Filter_Size (Luma)**|**Filter (Chroma)**|**Filter_Size (Chroma)**|
+|--- |--- |--- |--- |--- |--- |
+|>=TX_8x8|Yes|Filter14 (13-tap)|14|Filter6 (5-tap)|6|
+||No|Filter8 (7-tap)/ Filter4|4|Filter4|4|
+|TX_8x8|Yes|Filter8 (7-tap)|8|Filter6 (5-tap)|6|
+||No|Filter4|4|Filter4|4|
+|TX_4x4|-|Filter4|4|Filter4|4|
+
 
 A block diagram illustrating the flow of the different steps involved in
 filtering is given in Figure 1 below.
 
-<div align="center">
-  <img src="./img/dlf_fig1.png" />
+![dlf_fig1](./img/dlf_fig1.png)
 
 ##### Figure 1. Steps in the loop filter decisions making process.
-</div>
 
 The steps shown in the block diagram above are now discussed in more
 detail.
@@ -212,12 +160,12 @@ Edge Variance Mask (Hev\_Mask), Flat\_Mask, Flat\_Mask2
 
         If
 
-        - (ABS( pi – pi-1 ) \> limit, i=1,…,n; OR
+        - (ABS( ![math](http://latex.codecogs.com/gif.latex?pi) – ![math](http://latex.codecogs.com/gif.latex?pi-1) ) \> limit, i=1,…,n; OR
 
-        - (ABS( q<sub>i</sub> – q<sub>i-1</sub> ) \> limit, i=1,…,n; OR
+        - (ABS( ![math](http://latex.codecogs.com/gif.latex?q_{i}) – ![math](http://latex.codecogs.com/gif.latex?q_{i-1}) ) \> limit, i=1,…,n; OR
 
-        - (ABS( p<sub>0</sub> - q<sub>0</sub> ) \* 2 + ABS( p<sub>1</sub> -
-        q<sub>1</sub> ) / 2 \> blimit)
+        - (ABS( ![math](http://latex.codecogs.com/gif.latex?p_{0}) - ![math](http://latex.codecogs.com/gif.latex?q_{0}) ) \* 2 + ABS( ![math](http://latex.codecogs.com/gif.latex?p_{1}) -
+        ![math](http://latex.codecogs.com/gif.latex?q_{1}) ) / 2 \> blimit)
 
         then the edge is most likely a true edge. In that case, do not filter
         the tested samples and set Filter\_Mask to zero. Otherwise,
@@ -236,9 +184,9 @@ Edge Variance Mask (Hev\_Mask), Flat\_Mask, Flat\_Mask2
 
     Flat\_Mask = 1 when the following conditions are true:
 
-    - abs(p<sub>i</sub> - p<sub>0</sub>) \<= thresh, i=1,…,n; AND
+    - abs(![math](http://latex.codecogs.com/gif.latex?p_{i}) - ![math](http://latex.codecogs.com/gif.latex?p_{0})) \<= thresh, i=1,…,n; AND
 
-    - abs(p<sub>i</sub> - p<sub>0</sub>) \<= thresh, i=1,…,n
+    - abs(![math](http://latex.codecogs.com/gif.latex?p_{i}) - ![math](http://latex.codecogs.com/gif.latex?p_{0})) \<= thresh, i=1,…,n
 
     Otherwise, Flat\_Mask = 0.
 
@@ -247,8 +195,8 @@ Edge Variance Mask (Hev\_Mask), Flat\_Mask, Flat\_Mask2
     flat areas.
 
     Flat\_Mask2 = 1 when the following conditions are true:
-    ABS(p<sub>i</sub> - p<sub>0</sub>) \<= thresh, i=4,…,6; AND
-    ABS(q<sub>i</sub> - q<sub>0</sub>) \<= thresh, i=4,…,6. Otherwise,
+    ABS(![math](http://latex.codecogs.com/gif.latex?p_{i}) - ![math](http://latex.codecogs.com/gif.latex?p_{0})) \<= thresh, i=4,…,6; AND
+    ABS(![math](http://latex.codecogs.com/gif.latex?q_{i}) - ![math](http://latex.codecogs.com/gif.latex?q_{0})) \<= thresh, i=4,…,6. Otherwise,
     Flat\_Mask2 = 0.
 
 ### Filtering decision making process
@@ -272,9 +220,7 @@ The steps involved in the filtering operation are as follows:
 
 The filtering decisions are outlined in the diagram shown in Figure 2 below.
 
-<p align="center">
-  <img src="./img/dlf_fig2.png" />
-</p>
+![dlf_fig2](./img/dlf_fig2.png)
 
 ##### Figure 2. Flow of the loop filter decision making process.
 
@@ -283,24 +229,20 @@ operation are outlined below. Figure 3 below indicates the positions
 of the samples across the horizontal edge to be filtered, with similar
 arrangement of the samples for the case of a vertical edge.
 
-<div align="center">
-  <img src="./img/dlf_fig3.png" />
+![dlf_fig3](./img/dlf_fig3.png)
 
 ##### Figure 3. Sample positions across the horizontal edge to be filtered.
-</div>
-
-
 
 *Filter4:* Modifies up to two samples on each side of the boundary,
   depending on High Variance Edge Mask (Hev\_Mask). Rough outline of
   the main idea:
-  - Hev\_Mask = 1 <img src="./img/r_arrow.png"/> only q0 and p0 are filtered.
-      - Delta = ((p<sub>1</sub> – q<sub>1</sub>) + 3(q<sub>0</sub>-p<sub>0</sub>))/8
-      - q0 <img src="./img/l_arrow.png"/> q0 – Delta; p0 <img src="./img/l_arrow.png"/> p0 + Delta
-  - Hev\_Mask = 0 <img src="./img/r_arrow.png"/> q0, q1, p0 and p1 are filtered.
+  - Hev\_Mask = 1 ![r_arrow](./img/r_arrow.png) only q0 and p0 are filtered.
+      - Delta = ((![math](http://latex.codecogs.com/gif.latex?p_{1}) – ![math](http://latex.codecogs.com/gif.latex?q_{1})) + 3(![math](http://latex.codecogs.com/gif.latex?q_{0})-![math](http://latex.codecogs.com/gif.latex?p_{0})))/8
+      - q0 ![r_arrow](./img/l_arrow.png) q0 – Delta; p0 ![r_arrow](./img/l_arrow.png) p0 + Delta
+  - Hev\_Mask = 0 ![r_arrow](./img/r_arrow.png) q0, q1, p0 and p1 are filtered.
       - Delta = 3(q0-p0)/8
-      - q0 <img src="./img/l_arrow.png"/> q0 - Delta; p0 <img src="./img/l_arrow.png"/> p0 + Delta
-      - q1 <img src="./img/l_arrow.png"/> q1 - Delta/2; p1 <img src="./img/l_arrow.png"/> p1+Delta/2
+      - q0 ![r_arrow](./img/l_arrow.png) q0 - Delta; p0 ![r_arrow](./img/l_arrow.png) p0 + Delta
+      - q1 ![r_arrow](./img/l_arrow.png) q1 - Delta/2; p1 ![r_arrow](./img/l_arrow.png) p1+Delta/2
 
       clamp(x) clamps the value of x to within the interval -128 to 127.
       Round2(x,1) returns (x+1)\>\>1.
@@ -326,22 +268,22 @@ arrangement of the samples for the case of a vertical edge.
 - Applies to chroma planes only.
 - Modifies two samples on each side of the edge. (See the function
 filter6)
-  - p1 <img src="./img/l_arrow.png"/> (p2 \* 3 + p1 \* 2 + p0 \* 2 + q0 + 4)\>\>3;
-  - p0 <img src="./img/l_arrow.png"/> (p2 + p1 \* 2 + p0 \* 2 + q0 \* 2 + q1 + 4)\>\>3;
-  - q0 <img src="./img/l_arrow.png"/> (p1 + p0 \* 2 + q0 \* 2 + q1 \* 2 + q2 + 4)\>\>3;
-  - q1 <img src="./img/l_arrow.png"/> (p0 + q0 \* 2 + q1 \* 2 + q2 \* 3 + 4)\>\>3;
+  - p1 ![r_arrow](./img/l_arrow.png) (p2 \* 3 + p1 \* 2 + p0 \* 2 + q0 + 4)\>\>3;
+  - p0 ![r_arrow](./img/l_arrow.png) (p2 + p1 \* 2 + p0 \* 2 + q0 \* 2 + q1 + 4)\>\>3;
+  - q0 ![r_arrow](./img/l_arrow.png) (p1 + p0 \* 2 + q0 \* 2 + q1 \* 2 + q2 + 4)\>\>3;
+  - q1 ![r_arrow](./img/l_arrow.png) (p0 + q0 \* 2 + q1 \* 2 + q2 \* 3 + 4)\>\>3;
 
 *Filter8*
 - 7-tap filter: \[1, 1, 1, 2, 1, 1, 1\]
 - Applies to luma plane only.
 - Modifies three samples on each side of the edge. (See the function
 filter8)
-  - p2 <img src="./img/l_arrow.png"/> (p3 + p3 + p3 + 2 \* p2 + p1 + p0 + q0 + 4)\>\>3;
-  - p1 <img src="./img/l_arrow.png"/> (p3 + p3 + p2 + 2 \* p1 + p0 + q0 + q1 + 4)\>\>3;
-  - p0 <img src="./img/l_arrow.png"/> (p3 + p2 + p1 + 2 \* p0 + q0 + q1 + q2 + 4)\>\>3;
-  - q0 <img src="./img/l_arrow.png"/> (p2 + p1 + p0 + 2 \* q0 + q1 + q2 + q3 + 4)\>\>3;
-  - q1 <img src="./img/l_arrow.png"/> (p1 + p0 + q0 + 2 \* q1 + q2 + q3 + q3 + 4)\>\>3;
-  - q2 <img src="./img/l_arrow.png"/> (p0 + q0 + q1 + 2 \* q2 + q3 + q3 + q3 + 4)\>\>3;
+  - p2 ![r_arrow](./img/l_arrow.png) (p3 + p3 + p3 + 2 \* p2 + p1 + p0 + q0 + 4)\>\>3;
+  - p1 ![r_arrow](./img/l_arrow.png) (p3 + p3 + p2 + 2 \* p1 + p0 + q0 + q1 + 4)\>\>3;
+  - p0 ![r_arrow](./img/l_arrow.png) (p3 + p2 + p1 + 2 \* p0 + q0 + q1 + q2 + 4)\>\>3;
+  - q0 ![r_arrow](./img/l_arrow.png) (p2 + p1 + p0 + 2 \* q0 + q1 + q2 + q3 + 4)\>\>3;
+  - q1 ![r_arrow](./img/l_arrow.png) (p1 + p0 + q0 + 2 \* q1 + q2 + q3 + q3 + 4)\>\>3;
+  - q2 ![r_arrow](./img/l_arrow.png) (p0 + q0 + q1 + 2 \* q2 + q3 + q3 + q3 + 4)\>\>3;
 
 *Filter14*
 
@@ -349,28 +291,28 @@ filter8)
 - Applies to luma plane only.
 - Modifies six samples on each side of the edge. (See the function
 filter14)
-  - p5 <img src="./img/l_arrow.png"/> (p6 \* 7 + p5 \* 2 + p4 \* 2 + p3 + p2 + p1 + p0 + q0 + 8)\>\>4,
-  - p4 <img src="./img/l_arrow.png"/> (p6 \* 5 + p5 \* 2 + p4 \* 2 + p3 \* 2 + p2 + p1 + p0 + q0 + q1 +
+  - p5 ![r_arrow](./img/l_arrow.png) (p6 \* 7 + p5 \* 2 + p4 \* 2 + p3 + p2 + p1 + p0 + q0 + 8)\>\>4,
+  - p4 ![r_arrow](./img/l_arrow.png) (p6 \* 5 + p5 \* 2 + p4 \* 2 + p3 \* 2 + p2 + p1 + p0 + q0 + q1 +
     8)\>\>4
-  - p3 <img src="./img/l_arrow.png"/> (p6 \* 4 + p5 + p4 \* 2 + p3 \* 2 + p2 \* 2 + p1 + p0 + q0 + q1 +
+  - p3 ![r_arrow](./img/l_arrow.png) (p6 \* 4 + p5 + p4 \* 2 + p3 \* 2 + p2 \* 2 + p1 + p0 + q0 + q1 +
     q2 + 8)\>\>4
-  - p2 <img src="./img/l_arrow.png"/> (p6 \* 3 + p5 + p4 + p3 \* 2 + p2 \* 2 + p1 \* 2 + p0 + q0 + q1 +
+  - p2 ![r_arrow](./img/l_arrow.png) (p6 \* 3 + p5 + p4 + p3 \* 2 + p2 \* 2 + p1 \* 2 + p0 + q0 + q1 +
     q2 + q3 + 8)\>\>4
-  - p1 <img src="./img/l_arrow.png"/> (p6 \* 2 + p5 + p4 + p3 + p2 \* 2 + p1 \* 2 + p0 \* 2 + q0 + q1 +
+  - p1 ![r_arrow](./img/l_arrow.png) (p6 \* 2 + p5 + p4 + p3 + p2 \* 2 + p1 \* 2 + p0 \* 2 + q0 + q1 +
     q2 + q3 + q4 + 8)\>\>4
-  - p0 <img src="./img/l_arrow.png"/> (p6 + p5 + p4 + p3 + p2 + p1 \* 2 + p0 \* 2 + q0 \* 2 + q1 + q2 +
+  - p0 ![r_arrow](./img/l_arrow.png) (p6 + p5 + p4 + p3 + p2 + p1 \* 2 + p0 \* 2 + q0 \* 2 + q1 + q2 +
     q3 + q4 + q5 + 8)\>\>4
-  - q0 <img src="./img/l_arrow.png"/> (p5 + p4 + p3 + p2 + p1 + p0 \* 2 + q0 \* 2 + q1 \* 2 + q2 + q3 +
+  - q0 ![r_arrow](./img/l_arrow.png) (p5 + p4 + p3 + p2 + p1 + p0 \* 2 + q0 \* 2 + q1 \* 2 + q2 + q3 +
     q4 + q5 + q6 + 8)\>\>4
-  - q1 <img src="./img/l_arrow.png"/> (p4 + p3 + p2 + p1 + p0 + q0 \* 2 + q1 \* 2 + q2 \* 2 + q3 + q4 +
+  - q1 ![r_arrow](./img/l_arrow.png) (p4 + p3 + p2 + p1 + p0 + q0 \* 2 + q1 \* 2 + q2 \* 2 + q3 + q4 +
     q5 + q6 \* 2 + 8)\>\>4
-  - q2 <img src="./img/l_arrow.png"/> (p3 + p2 + p1 + p0 + q0 + q1 \* 2 + q2 \* 2 + q3 \* 2 + q4 + q5 +
+  - q2 ![r_arrow](./img/l_arrow.png) (p3 + p2 + p1 + p0 + q0 + q1 \* 2 + q2 \* 2 + q3 \* 2 + q4 + q5 +
     q6 \* 3 + 8)\>\>4
-  - q3 <img src="./img/l_arrow.png"/> (p2 + p1 + p0 + q0 + q1 + q2 \* 2 + q3 \* 2 + q4 \* 2 + q5 + q6
+  - q3 ![r_arrow](./img/l_arrow.png) (p2 + p1 + p0 + q0 + q1 + q2 \* 2 + q3 \* 2 + q4 \* 2 + q5 + q6
     \* 4 +8)\>\>4
-  - q4 <img src="./img/l_arrow.png"/> (p1 + p0 + q0 + q1 + q2 + q3 \* 2 + q4 \* 2 + q5 \* 2 + q6 \* 5 +
+  - q4 ![r_arrow](./img/l_arrow.png) (p1 + p0 + q0 + q1 + q2 + q3 \* 2 + q4 \* 2 + q5 \* 2 + q6 \* 5 +
     8)\>\>4
-  - q5 <img src="./img/l_arrow.png"/> (p0 + q0 + q1 + q2 + q3 + q4 \* 2 + q5 \* 2 + q6 \* 7 + 8)\>\>4
+  - q5 ![r_arrow](./img/l_arrow.png) (p0 + q0 + q1 + q2 + q3 + q4 \* 2 + q5 \* 2 + q6 \* 7 + 8)\>\>4
 
 
 
@@ -499,11 +441,9 @@ The function calls that start at ```eb_av1_loop_filter_frame``` are
 indicated in Figure 4 below according to the depth of the function
 call.
 
-<div align="center">
-  <img src="./img/dlf_fig4.png" />
+![dlf_fig4](./img/dlf_fig4.png)
 
 ##### Figure 4. Function calls starting at eb\_av1\_loop\_filter\_frame.
-</div>
 
 The main steps involved in are outlines as follows.
 
@@ -573,107 +513,7 @@ according to Table 5 below.
 
 ##### Table 5. Loop filter mode as a function of the encoder mode.
 
-<table>
-  <tr>
-  <td rowspan = 3><b>Encoder Mode
-  <br>(enc_mode)</br>
-  </b></td>
-  <td colspan=2><b> loop_filter_mode
-<br>(Case of sc_content_detected = 0)</br>
-  </b></td>
-  <td colspan=2><b> loop_filter_mode
-<br>(Case of sc_content_detected = 1)</br>
- </b></td>
-  </tr>
-  <tr>
-  <td colspan=2><b> is_used_as_reference_flag
-  </b></td>
-  <td colspan=2><b> is_used_as_reference_flag
-  </b></td>
-  </tr>
-
-  <tr>
-  <td>0</td>
-  <td>1</td>
-  <td>0</td>
-  <td>1</td>
-  </tr>
-
-  <tr>
-  <td>0</td>
-  <td>3</td>
-  <td>3</td>
-  <td>0</td>
-  <td>3</td>
-  </tr>
-
-  <tr>
-  <td>1</td>
-  <td>0</td>
-  <td>3</td>
-  <td>0</td>
-  <td>3</td>
-  </tr>
-
-  <tr>
-  <td>2</td>
-  <td>0</td>
-  <td>3</td>
-  <td>0</td>
-  <td>0</td>
-  </tr>
-
-  <tr>
-  <td>3</td>
-  <td>0</td>
-  <td>3</td>
-  <td>0</td>
-  <td>0</td>
-  </tr>
-
-  <tr>
-  <td>4</td>
-  <td>0</td>
-  <td>3</td>
-  <td>0</td>
-  <td>0</td>
-  </tr>
-
-  <tr>
-  <td>5</td>
-  <td>0</td>
-  <td>3</td>
-  <td>0</td>
-  <td>0</td>
-  </tr>
-
-  <tr>
-  <td>6</td>
-  <td>0</td>
-  <td>1</td>
-  <td>0</td>
-  <td>0</td>
-  </tr>
-
-  <tr>
-  <td>7</td>
-  <td>0</td>
-  <td>1</td>
-  <td>0</td>
-  <td>0</td>
-  </tr>
-
-  <tr>
-  <td>8</td>
-  <td>0</td>
-  <td>1</td>
-  <td>0</td>
-  <td>0</td>
-  </tr>
-
-</table>
-
-
+![table5](./img/dlf_table5.png)
 
 The ```loop_filter_mode``` is used to specify the filter level search method
 in (```av1_pick_filter_level```), either Search Method 1 or Search Method

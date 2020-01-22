@@ -75,9 +75,7 @@ considered in the following are listed below:
 The main function calls associated with Tx search in MD and in the
 encode pass are outlined in Figure 1 below.
 
-<p align="center">
-  <img src="./img/tx_search_fig1.png" />
-</p>
+![tx_search_fig1](./img/tx_search_fig1.png)
 
 ##### Figure 1. Main function calls associated with TX search in MD and in the encode pass.
 
@@ -90,9 +88,7 @@ in MD and the function ```encode_pass_tx_search``` in the encode pass.
 A summary of the different optimization approaches considered in Tx
 search is presented in Figure 2 below.
 
-<p align="center">
-  <img src="./img/tx_type_search_fig2.png" />
-</p>
+![tx_search_fig2](./img/tx_type_search_fig2.png)
 
 ##### Figure 2. A Summary of the Tx search optimization approaches.
 
@@ -120,103 +116,7 @@ function of the encoder preset and other settings are given in Table 4.
 
 ##### Table 4. tx\_search\_level settings as a function of encoder settings.
 
-<table>
-
-  <tr>
-  <td rowspan=2><b>Preset</b></b> </td>
-  <td rowspan=2><b>PD_PASS_0</b></td>
-  <td rowspan=2><b>PD_PASS_1</b></td>
-  <td colspan=2><b> PD_PASS_2</b></td>
-  </tr>
-  <tr>
-  <td><b> sc_content_detected = 0</b></td>
-  <td><b> sc_content_detected = 1</b></td>
-  </tr>
-
-
-<tr class="even">
-<td>M0</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-</tr>
-<tr class="odd">
-<td>M1</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-</tr>
-<tr class="even">
-<td>M2</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-</tr>
-<tr class="odd">
-<td>M3</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-</tr>
-<tr class="even">
-<td>M4</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-</tr>
-<tr class="odd">
-<td>M5</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>if (temporal_layer_index == 0) then<br />
-TX_SEARCH_FULL_LOOP<br />
-else<br />
-TX_SEARCH_ENC_DEC</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-</tr>
-<tr class="even">
-<td>M6</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>if (temporal_layer_index == 0) then<br />
-TX_SEARCH_FULL_LOOP<br />
-else<br />
-TX_SEARCH_ENC_DEC</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-</tr>
-<tr class="odd">
-<td>M7</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>if (temporal_layer_index == 0) then<br />
-TX_SEARCH_FULL_LOOP<br />
-else<br />
-TX_SEARCH_ENC_DEC</td>
-<td>if is_used_as_reference_flag then<br />
-TX_SEARCH_FULL_LOOP<br />
-else<br />
-TX_SEARCH_ENC_DEC</td>
-</tr>
-<tr class="even">
-<td>M8</td>
-<td>TX_SEARCH_OFF</td>
-<td>TX_SEARCH_FULL_LOOP</td>
-<td>TX_SEARCH_ENC_DEC</td>
-<td>if is_used_as_reference_flag then<br />
-TX_SEARCH_FULL_LOOP<br />
-else<br />
-TX_SEARCH_ENC_DEC</td>
-</tr>
-
- </tbody>
-</table>
-
-
+![image_table4](./img/tx_search_table4.png)
 
 **Cost-dependent Tx search**
 
@@ -241,45 +141,11 @@ function of the encoder preset and other settings are given in Table
 
 ##### Table 6. tx\_weight as a function of encoder settings.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>Preset</strong></th>
-<th><strong>PD_PASS_0</strong></th>
-<th><strong>PD_PASS_1</strong></th>
-<th><strong>PD_PASS_2</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>M0</td>
-<td>MAX_MODE_COST</td>
-<td>FC_SKIP_TX_SR_TH025</td>
-<td>if (tx_search_level == TX_SEARCH_ENC_DEC) then<br />
-MAX_MODE_COST<br />
-else<br />
-FC_SKIP_TX_SR_TH025</td>
-</tr>
-<tr class="even">
-<td>M1</td>
-<td>MAX_MODE_COST</td>
-<td>FC_SKIP_TX_SR_TH025</td>
-<td>if (tx_search_level == TX_SEARCH_ENC_DEC) then<br />
-MAX_MODE_COST<br />
-else<br />
-FC_SKIP_TX_SR_TH025</td>
-</tr>
-<tr class="odd">
-<td>M2 - M8</td>
-<td>MAX_MODE_COST</td>
-<td>FC_SKIP_TX_SR_TH025</td>
-<td>if is_used_as_reference_flag then<br />
-FC_SKIP_TX_SR_TH025<br />
-else<br />
-FC_SKIP_TX_SR_TH010</td>
-</tr>
-</tbody>
-</table>
+|**Preset**|**PD_PASS_0**|**PD_PASS_1**|**PD_PASS_2**|
+|--- |--- |--- |--- |
+|M0|MAX_MODE_COST|FC_SKIP_TX_SR_TH025|if (tx_search_level == TX_SEARCH_ENC_DEC) then MAX_MODE_COST else FC_SKIP_TX_SR_TH025|
+|M1|MAX_MODE_COST|FC_SKIP_TX_SR_TH025|if (tx_search_level == TX_SEARCH_ENC_DEC) then MAX_MODE_COST else FC_SKIP_TX_SR_TH025|
+|M2 - M8|MAX_MODE_COST|FC_SKIP_TX_SR_TH025|if is_used_as_reference_flag then FC_SKIP_TX_SR_TH025 else FC_SKIP_TX_SR_TH010|
 
 
 **Search subset**: If Tx search is performed in either full-loop in MD or
@@ -300,98 +166,7 @@ preset and other settings are given in Table 8.
 
 ##### Table 8. tx\_search\_reduced\_set settings as a function of encoder settings.
 
-<table>
-<thead>
-
-  <tr>
-  <td rowspan=2><b>Preset</b></b> </td>
-  <td rowspan=2><b>PD_PASS_0</b></td>
-  <td rowspan=2><b>PD_PASS_1</b></td>
-  <td colspan=2><b> PD_PASS_2</b></td>
-  </tr>
-  <tr>
-  <td><b> sc_content_detected = 0</b></td>
-  <td><b> sc_content_detected = 1</b></td>
-  </tr>
-
-
-</thead>
-<tbody>
-
-<tr class="even">
-<td>M0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr class="odd">
-<td>M1</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td>M2</td>
-<td>0</td>
-<td>0</td>
-<td>0 if is_used_as_reference_flag<br />
-1 otherwise</td>
-<td>0 if (tx_search_level == TX_SEARCH_ENC_DEC)<br />
-1 otherwise</td>
-</tr>
-<tr class="odd">
-<td>M3</td>
-<td>0</td>
-<td>0</td>
-<td>0 if is_used_as_reference_flag<br />
-1 otherwise</td>
-<td>0 if (tx_search_level == TX_SEARCH_ENC_DEC)<br />
-1 otherwise</td>
-</tr>
-<tr class="even">
-<td>M4</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>0 if (tx_search_level == TX_SEARCH_ENC_DEC)<br />
-1 otherwise</td>
-</tr>
-<tr class="odd">
-<td>M5</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>0 if (tx_search_level == TX_SEARCH_ENC_DEC)<br />
-1 otherwise</td>
-</tr>
-<tr class="even">
-<td>M6</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>0 if (tx_search_level == TX_SEARCH_ENC_DEC)<br />
-1 otherwise</td>
-</tr>
-<tr class="odd">
-<td>M7</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr class="even">
-<td>M8</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>2</td>
-</tr>
-</tbody>
-</table>
-
-
+![image_table8](./img/tx_search_table8.png)
 
 ## II. Tx Size Search
 
@@ -426,9 +201,8 @@ sizes: 8X8, 8X16, 16X8, 16X16, 16X32, 32X16, 32X32, 32X64, 64X32,
 The main function calls associated with Tx size search in MD are
 outlined in Figure 3 below.
 
-<p align="center">
-  <img src="./img/tx_search_fig3.png" />
-</p>
+
+![tx_search_fig3](./img/tx_search_fig3.png)
 
 ##### Figure 3. Main function calls associated with Tx size search in MD.
 
@@ -442,58 +216,39 @@ the original block depth and one depth below are evaluated. The flow of
 the evaluation depends on whether the block is an inter coded block or
 an intra coded block, as outlined below.
 
-<ol type="1">
-  <li>  In the case of an inter block (i.e. the candidate type is INTER or Intra Block Copy),
+1. In the case of an inter block (i.e. the candidate type is INTER or Intra Block Copy),
     the residual block can be computed for the whole
     block based on the already computed prediction. This is done in the
-    function <mark>full_loop_core</mark> through the call to the function
-    <mark>residual_kernel</mark>.
-  </li>
+    function `full_loop_core` through the call to the function
+    `residual_kernel`.
 
-  <li>Determine the setting for the flag <mark>tx_search_skip_flag</mark>, which
+2. Determine the setting for the flag `tx_search_skip_flag`, which
     indicates whether transform type search would be performed or not.
-    The function <mark>get_skip_tx_search_flag</mark> is used to determine the
-    setting for the flag.</li>
-  <li>The function <mark>tx_reset_neighbor_arrays</mark> is used to reset the
-    neighbor arrays.</li>
-  <li>
-  Loop over the depths to be evaluated (i.e. current depth and the
-  next depth)
-  <ol type="a">
-  <li>Initialize the neighbor arrays using
-    <mark>tx_initialize_neighbor_arrays</mark>
-</li>
+    The function `get_skip_tx_search_flag` is used to determine the
+    setting for the flag.
 
-  <li>Loop over the Tx blocks in the depth being evaluated
-  <ol type="i">
-    <li>If the block is not an inter block, then
-    <ul>
-      <li> Perform luma intra prediction in <mark>av1_intra_luma_prediction</mark> </li>
-      <li> Compute the luma resulting residuals in <mark>residual_kernel</mark> </li>
-    </ul>
-    </li>
-    <li>Perform Tx search for the current Tx block in
-        <mark>tx_type_search</mark></li>
-    <li>Perform Tx, quantization, inverse quantization, and if spatial
-        SSE, inverse transform. Compute the cost of the current
-        transform type for the transform block size under consideration.
-        All these operations are performed in <mark>product_full_loop</mark>.</li>
-    <li>If the block is not an inter block, update both the recon
-        sample neighbor array and the transform-related neighbor array
-        <mark>tx_update_neighbor_array</mark>. Otherwise, update only the
-        transform-related neighbor array in the same function.</li>
-    </ol>
+3. The function `tx_reset_neighbor_arrays` is used to reset the
+    neighbor arrays.
 
-  </li>
-  <li>Estimate the rate associated with signaling the Tx size in
-    <mark>get_tx_size_bits</mark>.</li>
-  <li>Update <mark>best_cost_search</mark> and <mark>best_tx_depth</mark> based on the depths
-    evaluated so far.
-  </li>
-  </ol>
-  </li>
-  </li>
-</ol>
+4. Loop over the depths to be evaluated (i.e. current depth and thenext depth).
+
+   a. Initialize the neighbor arrays using `tx_initialize_neighbor_arrays`
+
+   b. Loop over the Tx blocks in the depth being evaluated.
+
+      1. If the block is not an inter block, then:
+         * Perform luma intra prediction in av1_intra_luma_prediction.
+         * Compute the luma resulting residuals in residual_kernel.
+
+      2. Perform Tx search for the current Tx block in `tx_type_search`
+
+      3. Perform Tx, quantization, inverse quantization, and if spatialSSE, inverse transform. Compute the cost of the current transform type for the transform block size under consideration. All these operations are performed in `product_full_loop`
+
+      4. If the block is not an inter block, update both the recon sample neighbor array and the transform-related neighbor array `tx_update_neighbor_array`. Otherwise, update only the transform-related neighbor array in the same function.
+
+   c. Estimate the rate associated with signaling the Tx size in `get_tx_size_bits`.
+
+   d. Update `best_cost_search` and `best_tx_depth` based on the depths evaluated so far.
 
 <!-- end list -->
 

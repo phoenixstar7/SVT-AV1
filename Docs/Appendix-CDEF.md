@@ -27,11 +27,9 @@ The two steps are outlined in more detail in the following.
 could be considered. The directions are indexed with d=0,…,7 as
 indicated in Figure 1 below.
 
-<div align="center">
-  <img src="./img/image24.png" />
-</div>
+![image24](./img/image24.png)
 
-##### <div align="center"> Figure 1. Block directions.</div>
+##### Figure 1. Block directions.
 
 For a given input block, the identification of edge direction is
 performed as follows:
@@ -53,49 +51,43 @@ The example in Figure 2 below illustrates this step for an 8x8 input block. In t
 example, direction 0 resulted in the smallest error variance and hence
 was selected as the block direction.
 
-<p align="center">
-  <img src="./img/image25.png" />
-</p>
+![image25](./img/image25.png)
 
-##### <p align="center"> Figure 2. Example of block direction identification. </p>
+##### Figure 2. Example of block direction identification.
 
 ***Step 2 – Filtering***. The filtering operation consists of two main
 steps, namely a primary filtering operation and a secondary filtering
 operation. The primary filter acts along the identified block direction.
-The secondary filter acts at 45<sup>○</sup> from the identified
+The secondary filter acts at ![math](http://latex.codecogs.com/gif.latex?45^o) from the identified
 direction. In the example shown in Figure 3 below, the block direction
-is d=0 (45<sup>0</sup>). The sample to be filtered is highlighted in
+is d=0 ![math](http://latex.codecogs.com/gif.latex?45^o). The sample to be filtered is highlighted in
 red. The samples to be considered when filtering the red sample in
 primary filtering are highlighted in green (a total of four samples).
 Those considered in the secondary filtering of the red sample are
-located at 45<sup>0</sup> angle from the block direction and are
+located at ![math](http://latex.codecogs.com/gif.latex?45^o) angle from the block direction and are
 highlighted in blue (a total of eight samples).
 
-<div align="center">
-  <img src="./img/image26.png" />
-</div>
+![image26](./img/image26.png)
 
-##### <div align="center"> Figure 3. Example of primary and secondary filtering directions. </div>
+##### Figure 3. Example of primary and secondary filtering directions.
 
 The nonlinear low-pass filters used in the filtering process are given
 by [\[1\]](#ref-1):
 
-<img src="http://latex.codecogs.com/gif.latex?P_{filtered} (i,j) = p(i,j)+\sum_{m,n} w_{m,n}f(p(m,n)-p(i,j),S,D)" border="0"/>
+![math](http://latex.codecogs.com/gif.latex?P_{filtered}(i,j)=p(i,j)+\sum_{m,n}w_{m,n}f(p(m,n)-p(i,j),S,D))
 
+Where ![image](http://latex.codecogs.com/gif.latex?p(i,j)) is the sample to be filtered,
+![image](http://latex.codecogs.com/gif.latex?P_{filtered}(i,j)) is the filtered value of
+sample ![image](http://latex.codecogs.com/gif.latex?p(i,j)), ![image](http://latex.codecogs.com/gif.latex?w) are the filter weights,
+![image](http://latex.codecogs.com/gif.latex?f) is a nonlinear constraint function, ![image](http://latex.codecogs.com/gif.latex?S) is the
+filter strength and ![image](http://latex.codecogs.com/gif.latex?D) is the filter damping.
 
-
-Where <img src="http://latex.codecogs.com/gif.latex?p(i,j)" border="0"/> is the sample to be filtered,
-<img src="http://latex.codecogs.com/gif.latex?P_{filtered}(i,j)" border="0"/> is the filtered value of
-sample <img src="http://latex.codecogs.com/gif.latex?p(i,j)" border="0"/>, <img src="http://latex.codecogs.com/gif.latex?w" border="0"/> are the filter weights,
-<img src="http://latex.codecogs.com/gif.latex?f" border="0"/> is a nonlinear constraint function, <img src="http://latex.codecogs.com/gif.latex?S" border="0"/> is the
-filter strength and <img src="http://latex.codecogs.com/gif.latex?D" border="0"/> is the filter damping.
-
-When <img src="http://latex.codecogs.com/gif.latex?|p(m,n)-p(i,j)|" border="0"/> is small, <img src="http://latex.codecogs.com/gif.latex?f(p(m,n) - p(i,j),S,D) = p(m,n)-p(i,j)" border="0"/>, implying that the filter
-behaves as an FIR filter. When <img src="http://latex.codecogs.com/gif.latex?|p(m,n)-p(i,j)|" border="0"/> is large,
-<img src="http://latex.codecogs.com/gif.latex?f(p(m,n) - p(i,j),S,D) = 0" border="0"/> and no filtering is applied to the sample. The function <img src="http://latex.codecogs.com/gif.latex?f" border="0"/>
-de-emphasizes neighboring pixels <img src="http://latex.codecogs.com/gif.latex?p(m,n)" border="0"/> with large
-contrast (i.e. large magnitude of <img src="http://latex.codecogs.com/gif.latex?p(m,n) - p(i,j)" border="0"/>). The strength
-<img src="http://latex.codecogs.com/gif.latex?S" border="0"/> and damping <img src="http://latex.codecogs.com/gif.latex?D" border="0"/> parameters control the attenuation of the large magnitude differences.
+When ![image](http://latex.codecogs.com/gif.latex?|p(m,n)-p(i,j)|) is small, ![image](http://latex.codecogs.com/gif.latex?f(p(m,n)-p(i,j),S,D)=p(m,n)-p(i,j)), implying that the filter
+behaves as an FIR filter. When ![image](http://latex.codecogs.com/gif.latex?|p(m,n)-p(i,j)|) is large,
+![image](http://latex.codecogs.com/gif.latex?f(p(m,n)-p(i,j),S,D)=0) and no filtering is applied to the sample. The function ![image](http://latex.codecogs.com/gif.latex?f)
+de-emphasizes neighboring pixels ![image](http://latex.codecogs.com/gif.latex?p(m,n)) with large
+contrast (i.e. large magnitude of ![image](http://latex.codecogs.com/gif.latex?p(m,n)-p(i,j))). The strength
+![image](http://latex.codecogs.com/gif.latex?S) and damping ![image](http://latex.codecogs.com/gif.latex?D) parameters control the attenuation of the large magnitude differences.
 
 
 Filtering along the identified block direction is referred to as primary
@@ -104,11 +96,9 @@ damping values. The filter weights for primary filtering are shown in
 Figure 4 below. The sample to be filtered is shown in blue. For even
 strengths, a = 2 and b = 4, whereas for odd strengths a = 3 and b = 3.
 
-<div align="center">
-  <img src="./img/image27.png" />
-</div>
+![image27](./img/image27.png)
 
-##### <div align="center"> Figure 4. Filter weights for primary filtering. </div>
+##### Figure 4. Filter weights for primary filtering.
 
 Filtering of samples that are at 45 degrees from the identified edge
 direction for the block is referred to as secondary filtering. Secondary
@@ -117,11 +107,9 @@ The filter weights for secondary filtering are indicated in Figure 5
 below as a function of the block direction. The sample to be filtered is
 shown in blue.
 
-<div align="center">
-  <img src="./img/image28.png" />
-</div>
+![image28](./img/image28.png)
 
-##### <div align="center"> Figure 5. Filter weights for secondary filtering. </div>
+##### Figure 5. Filter weights for secondary filtering.
 
 
 ## 2.  Implementation
@@ -147,11 +135,9 @@ Control flags associated with CDEF are listed in Table 1 below.
 Important function calls associated with CDEF are highlighted in Figure 6 below. The function calls are
 organized according to the depth of the function call.
 
-<div align="center">
-  <img src="./img/image29.png" />
-</div>
+![image29](./img/image29.png)
 
-##### <div align="center"> Figure 6. The main function calls associated with CDEF. </div>
+##### Figure 6. The main function calls associated with CDEF.
 
 The main steps involved in the implementation of the algorithm are
 outlined below, followed by more details on some of the important
@@ -556,65 +542,20 @@ to Table 3 below.
 
 ##### Table 3. cdef_filter_mode as a function of encoder preset.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>Encoder Preset<br />
-(enc_mode)</strong></th>
-<th><strong>cdef_filter_mode<br />
-(Case of sc_content_detected = 0)</strong></th>
-<th><strong>cdef_filter_mode<br />
-(Case of sc_content_detected = 1)</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>0</td>
-<td>4</td>
-<td>4</td>
-</tr>
-<tr class="even">
-<td>1</td>
-<td>4</td>
-<td>4</td>
-</tr>
-<tr class="odd">
-<td>2</td>
-<td>4</td>
-<td>4</td>
-</tr>
-<tr class="even">
-<td>3</td>
-<td>4</td>
-<td>4</td>
-</tr>
-<tr class="odd">
-<td>4</td>
-<td>4</td>
-<td>4</td>
-</tr>
-<tr class="even">
-<td>5</td>
-<td>4</td>
-<td>4</td>
-</tr>
-<tr class="odd">
-<td>6</td>
-<td>4</td>
-<td>0</td>
-</tr>
-<tr class="even">
-<td>7</td>
-<td>4</td>
-<td>0</td>
-</tr>
-<tr class="odd">
-<td>8</td>
-<td>0</td>
-<td>0</td>
-</tr>
-</tbody>
-</table>
+
+
+|**Encoder Preset (enc\_mode)** | **cdef\_filter\_mode (Case of sc\_content\_detected = 0)** | **cdef\_filter\_mode (Case of sc\_content\_detected = 1)** |
+|--- |--- |--- |
+|0|4|4|
+|1|4|4|
+|2|4|4|
+|3|4|4|
+|4|4|4|
+|5|4|4|
+|6|4|0|
+|7|4|0|
+|8|0|0|
+
 
 The `cdef_filter_mode` specifies the parameter `gi_step` through the
 function `get_cdef_gi_step`

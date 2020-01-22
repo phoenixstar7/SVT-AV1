@@ -11,9 +11,7 @@ stream for the decoder to reproduce the noise and add it in the
 reconstructed pictures. A block diagram showing the main components of
 the feature is included in Figure 1 below.
 
-<p align="center">
-  <img src="./img/film_grain_fig1.png" />
-</p>
+![film_grain_fig1](./img/film_grain_fig1.png)
 
 ##### Figure 1. Block diagram of the film grain modeling process.
 
@@ -44,8 +42,7 @@ a unit variance Gaussian noise is used to model the film grain. The
 model is defined over a causal neighborhood of lag L around the current
 pixel at position (x,y):
 
-n(x,y) = a<sub>0</sub>n(x-2, y-2)+a<sub>1</sub>n(x-1,
-y-2)+a<sub>2</sub>n(x,y-2)+…+a<sub>N</sub>n(x-1, y)+z
+![math](http://latex.codecogs.com/gif.latex?n(x,y)) ![math](http://latex.codecogs.com/gif.latex?=a_{0}n(x-2,y-2)+a_{1}n(x-1,y-2)+a_{2}n(x,y-2)+...+a_{N}n(x-1,y)+z)
 
 where n refers to the film grain, z is unit variance Gaussian noise and
 N=2L(L+1). The same set of unit variance Gaussian noise samples that
@@ -77,12 +74,9 @@ The chroma film grain scaling is based on the linear combination of the
 corresponding luma and chroma value to account for the luma effect on
 the chroma grain:
 
-<div align=center>
+![math](http://latex.codecogs.com/gif.latex?Cb'=Cb+\mathit{f}(u)G_{cb}),
 
-Cb´ = Cb + *f* (*u*) *G*<sub>Cb</sub>,
-
-*u* = *b*<sub>Cb</sub> Cb + *d*<sub>Cb</sub> Y<sub>av</sub> + *h*,
-</div>
+![math](http://latex.codecogs.com/gif.latex?u=b_{Cb}Cb+d_{Cb}Y_{av}+h),
 
 where *u* is the index into the look-up table that corresponds to a Cb
 component scaling function.
@@ -107,12 +101,9 @@ For luma, re-noising is performed on 32x32 basis by
 
 A similar operation is performed for the collocated 16x16 chroma blocks.
 
-<div align="center">
-  <img src="./img/film_grain_fig2.png" />
+![film_grain_fig2](./img/film_grain_fig2.png)
 
 ##### Figure 2. Example of film grain noise template.
-</div>
-
 
 An optional block overlap can be applied to the film grain as well. The
 block overlap attenuates potential artifacts at the film grain block
@@ -147,9 +138,7 @@ The control flags for the film grain feature are summarized in Table 1.
 The main function calls associated with the film grain parameter
 estimation are included in Figure 3 below.
 
-<p align="center">
-  <img src="./img/film_grain_fig3.png" />
-</p>
+![film_grain_fig3](./img/film_grain_fig3.png)
 
 ##### Figure 3. Main function calls associated with the film grain model parameter estimation process.
 
@@ -232,168 +221,44 @@ frame header.
 
 ##### Table 2. Film grain signaled parameters.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>Parameter</strong></th>
-<th><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>apply_grain</td>
-<td>Apply film grain for this frame</td>
-</tr>
-<tr class="even">
-<td>update_parameters</td>
-<td>Update parameters if flag is equal to 1, If equal to zero, a reference frame index is signaled, from which the parameters are copied.</td>
-</tr>
-<tr class="odd">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="even">
-<td>scaling_points_y[14][2]</td>
-<td>Scaling points function coordinates for luma</td>
-</tr>
-<tr class="odd">
-<td>num_y_points</td>
-<td>Number of luma points: value: 0...14</td>
-</tr>
-<tr class="even">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="odd">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="even">
-<td>scaling_points_cb[10][2]</td>
-<td>Scaling points function coordinates for Cb</td>
-</tr>
-<tr class="odd">
-<td>num_cb_points</td>
-<td>Number of Cb points: value: 0...10</td>
-</tr>
-<tr class="even">
-<td></td>
-<td> </td>
-</tr>
-<tr class="odd">
-<td>bit values</td>
-<td> </td>
-</tr>
-<tr class="even">
-<td>scaling_points_cr[10][2]</td>
-<td>Scaling points function coordinates for Cr</td>
-</tr>
-<tr class="odd">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="even">
-<td>num_cr_points</td>
-<td>Number of Cb points: value: 0...10</td>
-</tr>
-<tr class="odd">
-<td>scaling_shift</td>
-<td>shift for the scaling function: 8..11</td>
-</tr>
-<tr class="even">
-<td>ar_coeff_lag</td>
-<td>AR coefficients lag, determines the filter support</td>
-</tr>
-<tr class="odd">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="even">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="odd">
-<td>ar_coeffs_y[24]</td>
-<td>AR coefficients for luma</td>
-</tr>
-<tr class="even">
-<td>ar_coeffs_cb[25]</td>
-<td>AR coefficients for Cb</td>
-</tr>
-<tr class="odd">
-<td>ar_coeffs_cr[25]</td>
-<td>AR coefficients for Cr</td>
-</tr>
-<tr class="even">
-<td>ar_coeff_shift</td>
-<td>Shift value: determines AR coeffs range<br />
-6: [-2, 2)<br />
-7: [-1, 1)<br />
-8: [-0.5, 0.5)<br />
-9: [-0.25, 0.25)</td>
-</tr>
-<tr class="odd">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="even">
-<td>cb_mult</td>
-<td>multiplication factor for Cb scaling function input</td>
-</tr>
-<tr class="odd">
-<td>cb_luma_mult</td>
-<td>8 bits, luma multiplication factor for Cb scaling function input</td>
-</tr>
-<tr class="even">
-<td>cb_offset</td>
-<td>9 bits, offset for multiplication factor for Cr scaling function input</td>
-</tr>
-<tr class="odd">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="even">
-<td>cr_mult</td>
-<td>8 bits, multiplication factor for Cb scaling function input</td>
-</tr>
-<tr class="odd">
-<td>cr_luma_mult</td>
-<td>8 bits, luma multiplication factor for Cb scaling function input</td>
-</tr>
-<tr class="even">
-<td>cr_offset</td>
-<td>9 bits, offset for multiplication factor for Cr scaling function input</td>
-</tr>
-<tr class="odd">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="even">
-<td>overlap_flag</td>
-<td>optional 2 sample over between film grain blocks</td>
-</tr>
-<tr class="odd">
-<td>clip_to_restricted_range</td>
-<td>clip the film grain output to the restricted range</td>
-</tr>
-<tr class="even">
-<td> </td>
-<td> </td>
-</tr>
-<tr class="odd">
-<td>chroma_scaling_from_luma</td>
-<td>Chroma film grain uses luma scaling function,</td>
-</tr>
-<tr class="even">
-<td>grain_scale_shift</td>
-<td>Scaling factor for the film grain generation</td>
-</tr>
-<tr class="odd">
-<td>random_seed</td>
-<td>initializer for the pseudo-random numbers generator</td>
-</tr>
-</tbody>
-</table>
+|**Parameter**|**Description**|
+|--- |--- |
+|apply_grain|Apply film grain for this frame|
+|update_parameters|Update parameters if flag is equal to 1, If equal to zero, a reference frame index is signaled, from which the parameters are copied.|
+|||
+|scaling_points_y[14][2]|Scaling points function coordinates for luma|
+|num_y_points|Number of luma points: value: 0...14|
+|||
+|scaling_points_cb[10][2]|Scaling points function coordinates for Cb|
+|num_cb_points|Number of Cb points: value: 0...10|
+|||
+|bit values||
+|scaling_points_cr[10][2]|Scaling points function coordinates for Cr|
+|||
+|num_cr_points|Number of Cb points: value: 0...10|
+|scaling_shift|shift for the scaling function: 8..11|
+|ar_coeff_lag|AR coefficients lag, determines the filter support|
+|||
+|ar_coeffs_y[24]|AR coefficients for luma|
+|ar_coeffs_cb[25]|AR coefficients for Cb|
+|ar_coeffs_cr[25]|AR coefficients for Cr|
+|ar_coeff_shift|Shift value: determines AR coeffs range 6: [-2, 2) 7: [-1, 1) 8: [-0.5, 0.5) 9: [-0.25, 0.25)|
+|||
+|cb_mult|multiplication factor for Cb scaling function input|
+|cb_luma_mult|8 bits, luma multiplication factor for Cb scaling function input|
+|cb_offset|9 bits, offset for multiplication factor for Cr scaling function input|
+|||
+|cr_mult|8 bits, multiplication factor for Cb scaling function input|
+|cr_luma_mult|8 bits, luma multiplication factor for Cb scaling function input|
+|cr_offset|9 bits, offset for multiplication factor for Cr scaling function input|
+|||
+|overlap_flag|optional 2 sample over between film grain blocks|
+|clip_to_restricted_range|clip the film grain output to the restricted range|
+|||
+|chroma_scaling_from_luma|Chroma film grain uses luma scaling function,|
+|grain_scale_shift|Scaling factor for the film grain generation|
+|random_seed|initializer for the pseudo-random numbers generator|
+
 
 If the frame is ```INTER_FRAME```, the encoder checks whether the parameter
 set estimated for this frame is already present in one of the reference

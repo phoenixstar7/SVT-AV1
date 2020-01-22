@@ -31,9 +31,8 @@ multiple motion-compensated predictions. These are then combined using
 adaptive weighting (filtering) to produce the final noise-reduced
 picture.
 
-<p align="center">
-  <img src="./img/altref_fig1.png" />
-</p>
+
+![altref_fig1](./img/altref_fig1.png)
 
 ##### Fig. 1. Example of motion estimation for temporal filtering in a temporal window consisting of 5 adjacent pictures
 
@@ -41,9 +40,7 @@ Since a number of adjacent frames are necessary (identified by the
 parameter *altref_nframes*) the Look Ahead Distance (LAD) needs to be
 adjusted according to the following relationship:
 
-<p align="center">
-  <img src="./img/altref_math1.png" />
-</p>
+![altref_math1](./img/altref_math1.png)
 
 For instance, if the ```miniGOPsize``` is set to 16 pictures, and
 ```altref_nframes``` is 7, a ```LAD``` of 19 frames would be required.
@@ -53,9 +50,9 @@ is usually necessary. This picture corresponds to the same original
 source picture but can use the temporally filtered version of the source
 picture as a reference.
 
-## 1. Steps of the temporal filtering algorithm:
+### Steps of the temporal filtering algorithm:
 
-### Step 1: Building the list of source pictures
+#### Step 1: Building the list of source pictures
 
 As mentioned previously, the temporal filtering algorithm uses multiple
 frames to generate a temporally denoised or filtered picture at the
@@ -79,15 +76,13 @@ depending on a threshold, ```ahd_thres```, if the cumulative difference
 is high enough, edge pictures will be removed. The current threshold is
 chosen based on the picture width and height:
 
-<p align="center">
-  <img src="./img/altref_math2.png" />
-</p>
+![altref_math2](./img/altref_math2.png)
 
 After this step, the list of pictures to use for the temporal filtering
 is ready. However, given that the number of past and future frames can
 be different, the index of the central picture needs to be known.
 
-### Step 2: Source picture noise estimation and strength adjustment
+#### Step 2: Source picture noise estimation and strength adjustment
 
 In order to adjust the filtering strength according to the content
 characteristics, the amount of noise is estimated from the central
@@ -104,11 +99,9 @@ The filter strength is then adjusted from the input value,
 If the noise level is low, the filter strength is decreased. The final
 strength is adjusted based on the following conditions:
 
-<p align="center">
-  <img src="./img/altref_math3.png" />
-</p>
+![altref_math3](./img/altref_math3.png)
 
-### Step 3: Block-based processing
+#### Step 3: Block-based processing
 
 The central picture is split into 64x64 pixel non-overlapping blocks.
 For each block, ``` altref_nframes - 1``` motion-compensated
@@ -116,7 +109,7 @@ predictions will be determined from the adjacent frames and weighted in
 order to generate a final filtered block. All blocks are then combined
 to build the final filtered picture.
 
-### Step 4: Block-based motion estimation and compensation
+#### Step 4: Block-based motion estimation and compensation
 
 For each block and each adjacent picture, hierarchical block-based
 motion estimation (unilateral prediction) is performed. A similar
@@ -130,60 +123,50 @@ precision motion vectors is conducted on a 3x3 search window. Motion is
 estimated on the luma channel only, but the motion compensation is
 applied to all channels.
 
-### Step 5: Determination of block-based weights
+#### Step 5: Determination of block-based weights
 
-After motion compensation, distortion between the original (<img src="./img/altref_math4.png" />)
-and predicted ((<img src="./img/altref_math5.png" />)) sub-blocks of size 16x16 is computed
-using the non-normalized variance (<img src="./img/altref_math6.png" />) of the residual
-(<img src="./img/altref_math7.png" />), which is computed as follows:
+After motion compensation, distortion between the original (![math](http://latex.codecogs.com/gif.latex?B_{s}))
+and predicted ((![math](http://latex.codecogs.com/gif.latex?B_{p}))) sub-blocks of size 16x16 is computed
+using the non-normalized variance (![math](http://latex.codecogs.com/gif.latex?D_{var})) of the residual
+(![math](http://latex.codecogs.com/gif.latex?B_{r})), which is computed as follows:
 
-<p align="center">
-  <img src="./img/altref_math8.png" />
-</p>
-<p align="center">
-  <img src="./img/altref_math9.png" />
-</p>
-<p align="center">
-  <img src="./img/altref_math10.png" />
-</p>
+![math](http://latex.codecogs.com/gif.latex?B_{r}(i,j)=B_{p}(i,j)-B_{s}(i,j))
+
+![math](http://latex.codecogs.com/gif.latex?\mu=\sum_{i=0}^{H}\sum_{j=0}^{W}\frac{B_{r}(i,j)}{H*W})
+
+![math](http://latex.codecogs.com/gif.latex?D_{var}=\sum_{i=0}^H\sum_{j=0}^W(B_{r}(i,j)-\mu)^2)
 
 Based on this distortion, sub-block weights, ```blk_fw```, from 0 to 2 are
 determined using two thresholds, ```thres_low``` and ```thres_high```:
 
-<p align="center">
-  <img src="./img/altref_math11.png" />
-</p>
+![math11](./img/altref_math11.png)
 
 Where ```thres_low = 10000``` and ```thres_high = 20000```.
 
 For the central picture, the weights are always 2 for all blocks.
 
-### Step 6: Determination of pixel-based weights
+#### Step 6: Determination of pixel-based weights
 
 After obtaining the sub-block weights, a further refinement of the
 weights is computed for each pixel of the predicted block. This is based
 on a non-local means approach.
 
-First, the Squared Errors, <img src="./img/altref_math12.png" />, between the predicted
+First, the Squared Errors, ![math](http://latex.codecogs.com/gif.latex?se(i,j)), between the predicted
 and the central block are computed per pixel for the Y, U and V
 channels. Then, for each pixel, when computing the Y pixel weight, a
-neighboring sum of squared errors, <img src="./img/altref_math13.png" />, corresponding
+neighboring sum of squared errors, ![math](http://latex.codecogs.com/gif.latex?nsse_y), corresponding
 to the sum of the Y squared errors on a 3x3 neighborhood around the
 current pixel plus the U and V squared errors of the current pixel is
 computed:
 
-<p align="center">
-  <img src="./img/altref_math14.png" />
-</p>
+![math14](./img/altref_math14.png)
 
-The mean of the <img src="./img/altref_math13.png" />, <img src="./img/altref_math15.png" /> is then
-used to computed the pixel weight <img src="./img/altref_math16.png" /> of the current
+The mean of the ![math](http://latex.codecogs.com/gif.latex?nsse_y), ![math](http://latex.codecogs.com/gif.latex?nmse_y) is then
+used to computed the pixel weight ![math](./img/altref_math16.png) of the current
 pixel location (i,j), which is an integer between {0,16}, and is
 determined using the following equation:
 
-<p align="center">
-  <img src="./img/altref_math17.png" />
-</p>
+![math17](./img/altref_math17.png)
 
 Where strength is the adjusted *altref\_strength* parameter. The same
 approach is applied to the U and V weights, but in this case, the number
@@ -202,7 +185,7 @@ minimum is 0.
 In case the picture being processed is the central picture, all filter
 weights correspond to the maximum value, 32.
 
-### Step 7: Temporal filtering of the co-located motion compensated blocks
+#### Step 7: Temporal filtering of the co-located motion compensated blocks
 
 After multiplying each pixel of the co-located 64x64 blocks by the
 respective weight, the blocks are then added and normalized to produce
@@ -215,9 +198,7 @@ of Fig. 2. In this example, only 3 pictures are used for the temporal
 filtering ```altref_nframes = 3```. Moreover, the values of the filter
 weights are for illustration purposes only and are in the range {0,32}.
 
-<p align="center">
-  <img src="./img/altref_fig2.png" />
-</p>
+![altref_fig2](./img/altref_fig2.png)
 
 ##### Fig. 2. Example of the process of generating the filtered block from the predicted blocks of adjacent picture and their corresponding pixel weights.
 
@@ -238,6 +219,7 @@ source picture is stored in an additional buffer.
 | altref\_nframes  | Picture                      | Number of frames to use for the temporally filtering (default: 7, {0, 10}) - Can be modified on a frame-basis  |
 | altref\_strength | Picture                      | Filtering strength to use for the temporally filtering (default: 5, {0, 6}) - Can be modified on a frame-basis |
 | enable\_overlays | Sequence                     | Enable overlay frames (default: on)      |
+
 
 ### Implementation details
 
@@ -282,10 +264,10 @@ considerations).
 ### High bit-depth considerations
 
 For some of the operations, different but equivalent functions are
-implemented for 8-bit and 10-bit sources. For 8-bit sources, uint8\_t
-pointers are used, while for 10-bit sources, uint16\_t pointers are
+implemented for 8-bit and 10-bit sources. For 8-bit sources, uint8_t
+pointers are used, while for 10-bit sources, uint16_t pointers are
 used. In addition, the current implementation stores the high bit-depth
-sources in two separate uint8\_t buffers in the EbPictureBufferDesc
+sources in two separate uint8_t buffers in the EbPictureBufferDesc
 structure, for example, ```buffer_y``` for the luma 8 MSB and
 ```buffer_bit_inc_y``` for the luma LSB per pixel (2 in case of 10-bit).
 Therefore, prior to applying the temporal filtering, in case of 10-bit
@@ -326,54 +308,7 @@ temporal filtering is located in Source/Lib/Encoder/Codec:
 The table below presents the list of functions implemented in
 EbTemporalFiltering.c, grouped by tasks.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>Main functions</strong></th>
-<th><strong>Motion estimation / compensation</strong></th>
-<th><strong>Filtering operations</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><p>svt_av1_init_temporal_filtering()</p>
-<p>produce_temporally_filtered_pic()</p></td>
-<td><p>create_ME_context_and_picture_control()</p>
-<p>tf_inter_prediction()</p></td>
-<td><p>adjust_modifier()</p>
-<p>adjust_modifier_highbd()</p>
-<p>apply_filtering_block()</p>
-<p>apply_filtering_central()</p>
-<p>apply_filtering_central_highbd()</p>
-<p>get_final_filtered_pixels()</p>
-<p>svt_av1_apply_filtering_c()</p>
-<p>svt_av1_apply_filtering_highbd_c()</p>
-<p>get_subblock_filter_weight_16subblocks()</p>
-<p>get_subblock_filter_weight_4subblocks()</p></td>
-</tr>
-<tr class="even">
-<td><strong>Adjustment of filter strength</strong></td>
-<td><strong>Distortion estimation</strong></td>
-<td><strong>Auxiliary operations</strong></td>
-</tr>
-<tr class="odd">
-<td><p>estimate_noise()</p>
-<p>estimate_noise_highbd()</p>
-<p>adjust_filter_strength()</p></td>
-<td><p>get_ME_distortion()</p>
-<p>get_ME_distortion_highbd()</p>
-<p>calculate_squared_errors()</p>
-<p>calculate_squared_errors_highbd()</p></td>
-<td><p>save_src_pic_buffers()</p>
-<p>generate_padding_pic()</p>
-<p>get_blk_fw_using_dist()</p>
-<p>pack_highbd_pic()</p>
-<p>unpack_highbd_pic()</p>
-<p>pad_and_decimate_filtered_pic()</p>
-<p>populate_list_with_value()</p></td>
-</tr>
-</tbody>
-</table>
+![table1](./img/altref_table1.png)
 
 ## 3. Optimization of the algorithm
 

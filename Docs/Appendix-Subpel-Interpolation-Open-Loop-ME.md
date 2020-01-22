@@ -18,11 +18,9 @@ at the integer positions; b, h and j are the luminance samples at the
 half-pel positions and a, c, d, e, f, g, i, k, n, p, q and r are the
 luminance samples at the quarter-pel positions.
 
-<div align="center">
-  <img src="./img/sioplm_fig1.png" />
+![sioplm_fig1](./img/sioplm_fig1.png)
 
 ##### Figure 1. Fractional positions.
-</div>
 
 Table 1 below summarizes the filters used to generate the luminance
 samples at the half-pel positions.
@@ -73,9 +71,7 @@ of tiers to be considered in the refinement is determined by the
 H\_PEL\_SEARCH\_WIND and the Q\_PEL\_SEARCH\_WIND macros for half-pel and
 quarter-pel refinements, respectively.
 
-<p align="center">
-  <img src="./img/sioplm_fig2.png" />
-</p>
+![sioplm_fig2](./img/sioplm_fig2.png)
 
 ##### Figure 2. Subpel search refinement positions.
 

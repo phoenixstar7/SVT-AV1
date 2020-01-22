@@ -9,11 +9,9 @@ below. The intra prediction for sample P is the weighted sum of samples
 A, B and C. The latter could be reference pixels for the block and/or
 already predicted (i.e. filtered) samples within the same block.
 
-<div align="center">
-  <img src="./img/filter_intra_fig0.png" />
+![filter_intra_fig0](./img/filter_intra_fig0.png)
 
 ##### Figure 1. Prediction of the sample P using the neighboring samples A, B and C.
-</div>
 
 The prediction procedure is outlined as follows:
 
@@ -21,11 +19,9 @@ The prediction procedure is outlined as follows:
     block is divided into 8 4x2 blocks. See the example of the 8x8 block
     in Figure 2 below.
 
-<div align="center">
-  <img src="./img/filter_intra_fig1.png" />
+![filter_intra_fig1](./img/filter_intra_fig1.png)
 
 ##### Figure 2. Splitting a block into 4x2 blocks.
-</div>
 
   - For each 4x2 sub-block:
 
@@ -35,29 +31,25 @@ The prediction procedure is outlined as follows:
     samples are reference sample for the 8x8 block, the left neighboring
     samples are filtered samples from Block\_0.
 
-<div align="center">
-  <img src="./img/filter_intra_fig2.png" />
+![filter_intra_fig2](./img/filter_intra_fig2.png)
 
 ##### Figure 3. Example of reference samples for 4x2 blocks.
-</div>
 
   - The predicted pixels in the 4x2 sub-block are obtained by filtering
     the array of 7 neighboring pixels using the filtering methods. To
     illustrate the procedure, consider the 4x2 block shown in Figure 4
     below:
 
-<div align="center">
-  <img src="./img/filter_intra_fig3.png" />
+![filter_intra_fig3](./img/filter_intra_fig3.png)
 
 ##### Figure 4. Reference sample around a 4x2 block.
-</div>
 
-The predicted k<sup>th</sup> pixels, k=0,…,7, in the 4x2 block is given
+The predicted ![kth](http://latex.codecogs.com/gif.latex?k^{th}) pixels, k=0,…,7, in the 4x2 block is given
 by:
 
-av1_filter_intra_taps[mode][k][0] * P0 + av1_filter_intra_taps[mode][k][1] * P1 +
-av1_filter_intra_taps[mode][k][2] * P2 + av1_filter_intra_taps[mode][k][3] * P3 +
-av1_filter_intra_taps[mode][k][4] * P4 + av1_filter_intra_taps[mode][k][5] * P5 +
+av1_filter_intra_taps[mode][k][0] * P0 + av1_filter_intra_taps[mode][k][1] * P1 +\
+av1_filter_intra_taps[mode][k][2] * P2 + av1_filter_intra_taps[mode][k][3] * P3 +\
+av1_filter_intra_taps[mode][k][4] * P4 + av1_filter_intra_taps[mode][k][5] * P5 +\
 av1_filter_intra_taps[mode][k][6] * P6
 
 where mode refers to one of the five supported filter intra modes listed in the table below:
@@ -75,7 +67,8 @@ where mode refers to one of the five supported filter intra modes listed in the 
 The filter coefficients are listed in Table 2 as a function of the intra prediction mode and predicted sample.
 
 ##### Table 2. Filter coefficients as a function of the intra prediction mode and the predicted sample.
-  <img src="./img/filter_intra_table-2.png" />
+
+![filter_intra_table-2](./img/filter_intra_table-2.png)
 
 The best filtering mode (i.e. set of weights) is selected through, for
 example, a rate distortion performance measure.
@@ -89,6 +82,7 @@ The Filter Intra feature is applicable only to luma intra prediction and
 to blocks that have width and height less than or equal to 32.
 
 ## 2.  Implementation of the algorithm
+
 ##### Control macros/flags
 
 the control flags associated with the filter intra flag are listed in Table 3 below.
@@ -104,9 +98,7 @@ A diagram of the main function calls associated with the filter intra
 algorithm is shown in Figure 5 below. The functions are shown according
 to the depth of the function call.
 
-<p align="center">
-  <img src="./img/filter_intra_fig4.png" />
-</p>
+![filter_intra_fig4](./img/filter_intra_fig4.png)
 
 ##### Figure 5. Main function calls associated with the filter intra algorithm.
 

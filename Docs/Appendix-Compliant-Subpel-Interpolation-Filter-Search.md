@@ -21,15 +21,13 @@ Smooth) are used with small block sizes (width \<= 4).
 Vertical and horizontal interpolation can be performed using different
 1D filters. Interpolation filter selection can be performed at the frame
 level or at the block level. Luma filters are different from chroma
-filters. As noted in Table 1 below, beyond 8/16<sup>th</sup> position,
+filters. As noted in Table 1 below, beyond ![math](http://latex.codecogs.com/gif.latex?8/16^{th) position,
 filter coefficients are in reverse order as compared to the filter coefficients for the
-mirror position before 8/16<sup>th</sup> position.
+mirror position before ![math](http://latex.codecogs.com/gif.latex?8/16^{th) position.
 
 ##### Table 1. Sub-pel interpolation filters.
 
-<p align="center">
-  <img src="./img/csifsa_fig1.png" />
-</p>
+![csifsa_fig1](./img/csifsa_fig1.png)
 
 To illustrate the process by which subpel samples are generated,
 consider the diagram shown in Figure 1 below where All sub-pel positions
@@ -49,27 +47,25 @@ either in one step or in two steps.
     combination of horizontal and vertical filters.
 
       - Horizontal filtering is performed first. The filter to use is
-    deduced from the 1/16<sup>th</sup> offset of the sub-pel position
+    deduced from the ![math](http://latex.codecogs.com/gif.latex?1/16^{th) offset of the sub-pel position
     from the full-pel position. The buffer for horizontal filtering is
     expanded in the y direction on both ends of the block to produce
     additional filtered rows that would be used in vertical filtering.
 
       - Vertical filtering is then performed. The filter to use is deduced
-    from the 1/16<sup>th</sup> offset of the sub-pel position from the
+    from the ![math](http://latex.codecogs.com/gif.latex?1/16^{th) offset of the sub-pel position from the
     full-pel position.
 
-<div align="center">
-  <img src="./img/csifsa_fig2.png" />
+![csifsa_fig2](./img/csifsa_fig2.png)
 
 ##### Figure 1. Sub-pel positions.
-</div>
 
 An illustration of the interpolation process is given in the following
 by considering the sub-pel positions illustrated in Figure 2 below.
 Consider for example the case of generating half-pel samples around the
 best full-pel position (in orange), and assume regular filters are used.
 The steps involved in the process are outlined in the following:
-  - All half-pel positions are generated using the 8/16<sup>th</sup>
+  - All half-pel positions are generated using the ![math](http://latex.codecogs.com/gif.latex?8/16^{th)
     filter: **{** **0,** **2,** **-14,** **76,** **76,** **-14,**
     **2,** **0** **}**
   - Half-pel positions (orange and yellow) in the row of full-pel
@@ -96,11 +92,9 @@ The steps involved in the process are outlined in the following:
       - Vertical filtering is then performed on the intermediate
         results from horizontal filtering.
 
-<div align="center">
-  <img src="./img/csifsa_fig3.png" />
+![csifsa_fig3](./img/csifsa_fig3.png)
 
 ##### Figure 2. Example of sub-pel calculations.
-</div>
 
 ## 2.  Implementation of the algorithm
 
@@ -148,9 +142,7 @@ To account for the varying characteristics of the video picture in both the hori
   - Step3: Fix the vertical filter to be the best filter from
     step 2 and search for the best horizontal filter.
 
-<p align="center">
-  <img src="./img/csifsa_fig4.png" />
-</p>
+![csifsa_fig4](./img/csifsa_fig4.png)
 
 ##### Figure 3. Diagram illustrating the interpolation filter search process.
 
@@ -197,39 +189,7 @@ as indicated in Table 6 below.
 
 ##### Table 6. Description of the interpolation\_search\_level as a function of the encoder preset.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>PD Ppass</strong></th>
-<th><strong>interpolation_search_level</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>PD_PASS_0</td>
-<td>IT_SEARCH_OFF</td>
-</tr>
-<tr class="even">
-<td>PD_PASS_1</td>
-<td> if (temporal_layer_index == 0) then IT_SEARCH_FAST_LOOP_UV_BLIND (<br />
-else IT_SEARCH_OFF</td>
-</tr>
-<tr class="odd">
-<td>PD_PASS_2</td>
-<td> if (MR_MODE) then IT_SEARCH_FAST_LOOP<br />
-    &nbsp;&nbsp; else if (sc_content_detected) then IT_SEARCH_OFF<br />
-    &nbsp;&nbsp; else if (enc_mode <= ENC_M1) then IT_SEARCH_FAST_LOOP_UV_BLIND<br />
-    &nbsp;&nbsp; else if (enc_mode <= ENC_M3) then<br />
-    &nbsp;&nbsp;&nbsp;&nbsp; if (is_used_as_reference_flag) then IT_SEARCH_FAST_LOOP_UV_BLIND<br />
-    &nbsp;&nbsp;&nbsp;&nbsp; else IT_SEARCH_OFF<br />
-    &nbsp;&nbsp; else if (enc_mode <= ENC_M7)<br />
-    &nbsp;&nbsp;&nbsp;&nbsp; if (temporal_layer_index == 0) then IT_SEARCH_FAST_LOOP_UV_BLIND<br />
-    &nbsp;&nbsp;&nbsp;&nbsp; else IT_SEARCH_OFF<br />
-    else IT_SEARCH_OFF<br />
-</td>
-</tr>
-</tbody>
-</table>
+![img_table6](./img/csifsa_table6.png)
 
 ## 4.  Signaling
 

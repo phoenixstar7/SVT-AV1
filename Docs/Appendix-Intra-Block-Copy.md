@@ -24,9 +24,7 @@ frame consists of already reconstructed blocks that are 256 pixels away
 (in a raster scan order) from the current block. Figure 1 below
 illustrates the allowed search area.
 
-<p align="center">
-  <img src="./img/intra_block_copy_fig1.png" />
-</p>
+![intra_block_copy_fig1](./img/intra_block_copy_fig1.png)
 
 ##### Figure 1. Diagram showing blocks not allowed in the search area.
 
@@ -41,9 +39,7 @@ A diagram of the main function calls associated with the IBC algorithm
 is shown in Figure 2 below. The functions are shown according to the
 depth of the function call.
 
-<p align="center">
-  <img src="./img/intra_block_copy_fig2.png" />
-</p>
+![intra_block_copy_fig2](./img/intra_block_copy_fig2.png)
 
 ##### Figure 2. Main function calls associated with the IBC algorithm.
 
@@ -117,33 +113,11 @@ below.
 
 ##### Table 1. Control flags for IBC.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>Flag</strong></th>
-<th><strong>Level<br />
-(Sequence/Picture)</strong></th>
-<th><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>-scm</td>
-<td>Sequence</td>
-<td>Command line token. 0: No IBC, 1: IBC ON 2:Auto mode (detector based)</td>
-</tr>
-<tr class="even">
-<td>ibc_mode</td>
-<td>Picture</td>
-<td>Controls the complexity-quality tradeoff of the feature. 0: Slow mode, 1: Faster, 2: Fastest</td>
-</tr>
-<tr class="odd">
-<td>allow_intrabc</td>
-<td>Picture</td>
-<td>For intra pictures and for encoder presets 0 to 5, allow_intrabc setting is the same as the sc_content_detected setting; otherwise, it is set to 0.</td>
-</tr>
-</tbody>
-</table>
+|**Flag**|**Level(Sequence/Picture)**|**Description**|
+|--- |--- |--- |
+|-scm|Sequence|Command line token. 0: No IBC, 1: IBC ON 2:Auto mode (detector based)|
+|ibc_mode|Picture|Controls the complexity-quality tradeoff of the feature. 0: Slow mode, 1: Faster, 2: Fastest|
+|allow_intrabc|Picture|For intra pictures and for encoder presets 0 to 5, allow_intrabc setting is the same as the sc_content_detected setting; otherwise, it is set to 0.|
 
 ## 3.  Optimization of the algorithm
 

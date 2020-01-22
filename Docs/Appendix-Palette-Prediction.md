@@ -11,7 +11,7 @@ picture may involve repetitive patterns.
 
 In AV1, a palette specifies the most likely colors present in a given
 block. Palette prediction makes use of separate color index maps with 2
-to 8 base colors ```for each of the Y, U and V planes```, and is applicable
+to 8 base colors for each of the Y, U and V planes, and is applicable
 only to block sizes that are at least the size of 8x8 blocks and have dimensions
 smaller than 128.
 
@@ -27,16 +27,16 @@ colors with index 0, 1 and 2. Based on the selected palette, the index
 map of the block can be generated as shown below. The encoding of the
 indices then proceeds in a wavefront manner as indicated below.
 
-<p align="center">
-  <img src="./img/palette_prediction_fig1.png" />
-</p>
+![palette_prediction_fig1](./img/palette_prediction_fig1.png)
 
-##### <p align="center"> Figure 1. Example of a 4x4 source block, corresponding palette, index map and wavefront processing pattern. The 4x4 block is considered here only for illustration purposes, as the block size needs to be at least 8x8 for palette prediction to be allowed.</p>
+#####  Figure 1. Example of a 4x4 source block, corresponding palette, index map and wavefront processing pattern. The 4x4 block is considered here only for illustration purposes, as the block size needs to be at least 8x8 for palette prediction to be allowed.</p>
+
 
 The index for each pixel is encoded using the top and left encoded
 indices as context, as shown in the table below.
 
 ##### Table 1. Context for the samples in the example in Figure 1.
+
 
 | **Pixel** | **Context** |
 | --------- | ----------- |
@@ -60,29 +60,10 @@ indices as context, as shown in the table below.
 
 ##### Table 2. Control flags for palette prediction.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>Flag</strong></th>
-<th><strong>Level (sequence/Picture)</strong></th>
-<th><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>--palette</td>
-<td>Configuration</td>
-<td><p>To enable palette from the cli.</p>
-<p>0: off; 1: slow; … ; 6: fastest.</p>
-<p>Auto mode=-1 if not set from the configuration</p></td>
-</tr>
-<tr class="even">
-<td>palette_mode</td>
-<td>Picture based</td>
-<td>Set based on the configuration palette mode. For auto mode it is set to 6 for M0.</td>
-</tr>
-</tbody>
-</table>
+|**Flag**|**Level (Sequence/Picture)**|**Description**|
+|--- |--- |--- |
+|--palette|Configuration|To enable palette from the command-line interface. 0: OFF; 1: Slow; … ; 6: Fastest. Auto mode=-1 if not set from the encoder configuration|
+|palette_mode|Picture based|Set based on the configuration palette mode. For auto mode it is set to 6 for M0.|
 
 The feature is currently active only:
   - For encoder mode 0.
@@ -97,20 +78,18 @@ The feature is currently active only:
 
 The main function calls associated with palette mode prediction are indicated in Figure 2 below.
 
-<p align="center">
-  <img src="./img/palette_prediction_fig2.png" />
-</p>
+![palette_prediction_fig2](./img/palette_prediction_fig2.png)
 
 ##### Figure 2. Main function calls related to the injection of palette mode candidates.
 
 The following steps are then considered in the generation of palette prediction candidates.
 
-1.  In the function ```generate_md_stage_0_cand```, a candidate for palette prediction is
+1.	In the function ```generate_md_stage_0_cand```, a candidate for palette prediction is
     first evaluated to determine if the palette mode is allowed (svt_av1_allow_palette).
     The use of palette prediction mode is allowed if (palette_mode different from 0 AND block
     width <= 64 AND block height <= 64 AND block size at least 8x8.)
 
-1.  For blocks where palette prediction mode is allowed, the function ``` inject_palette_candidates``` is invoked to create and
+2.  For blocks where palette prediction mode is allowed, the function ``` inject_palette_candidates``` is invoked to create and
     inject palette candidates.The candidates are signaled using the Intra DC mode. This function
     calls another function (```search_palette_luma```) in order to
     determine all palette candidates for luma. The palette prediction candidates are determined by performing two
@@ -173,26 +152,7 @@ indicated in Table 4 below.
 
 ##### Table 4. palette\_mode as a function of encoder presets.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>Flag</strong></th>
-<th><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<td>palette_mode</td>
-<td> if (allow_screen_content_tools)<br />
-    &nbsp;&nbsp; if (enable_palette == -1), i.e. auto mode, not set by config<br />
-    &nbsp;&nbsp;&nbsp;&nbsp; if (encoder_bit_depth == EB_8BIT OR (encoder_bit_depth > EB_8BIT AND enable_hbd_mode_decision == 0))<br />
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if (enc_mode == ENC_M0) then 6, else 0<br />
-    &nbsp;&nbsp; else<br />
-    &nbsp;&nbsp;&nbsp;&nbsp; enable_palette (i.e. config setting)</br>
-    else 0
-</td>
-</tr>
-</tbody>
-</table>
+![image_table4](./img/palette_prediction_table4.png)
 
 ## 4.  **Signaling**
 

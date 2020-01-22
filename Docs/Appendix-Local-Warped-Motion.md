@@ -18,130 +18,103 @@ local motion for a given block. The feature makes use of motion vector informati
 for neighboring blocks to extract the local motion model parameters. The general
 motion model for local warped motion is given by
 
-<div align="center">
-<img src="./img/local_warped_motion_math1.png" />
-</div>
+![local_warped_motion_math1](./img/local_warped_motion_math1.png)
 
-where <img src="./img/local_warped_motion_math2.png" />  and <img src="./img/local_warped_motion_math3.png" />  represent the sample pixel coordinates in the current
+where ![local_warped_motion_math2](./img/local_warped_motion_math2.png) and ![local_warped_motion_math3](./img/local_warped_motion_math3.png)  represent the sample pixel coordinates in the current
 and reference frames, respectively. The decoder performs the same model
 estimation, so the encoder needs only to signal whether local warped
 motion is the selected mode for the current block and the corresponding
-translational model parameters <img src="./img/local_warped_motion_math4.png" />  and
-<img src="./img/local_warped_motion_math5.png" />, i.e. the rest of the model parameters are
+translational model parameters ![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{13}}) and
+![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{23}}), i.e. the rest of the model parameters are
 not signaled in the bitstream.
 
-To simplify the model estimation, <img src="./img/local_warped_motion_math4.png" /> and
-<img src="./img/local_warped_motion_math5.png" /> are assumed to represent the entries in the
+To simplify the model estimation, ![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{13}}) and
+![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{23}}) are assumed to represent the entries in the
 current block motion vector (**MV** in the Figure 1 below).
 
 Let **MV**=
-<img src="./img/local_warped_motion_math6.png" />. Then the above implies <img src="./img/local_warped_motion_math7.png" />. The remaining parameters <img src="./img/local_warped_motion_math8.png" />,
-<img src="./img/local_warped_motion_math9.png" />, <img src="./img/local_warped_motion_math10.png" /> and
-<img src="./img/local_warped_motion_math11.png" /> are estimated using a least squares
-approach.
+![local_warped_motion_math6](./img/local_warped_motion_math6.png). Then the above implies ![local_warped_motion_math7](./img/local_warped_motion_math7.png). The remaining parameters ![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{11},h_{12},h_{21}}),
+and ![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{22}}) are estimated using a least squares approach.
 
 To illustrate the estimation of the parameters
-<img src="./img/local_warped_motion_math8.png" />,
-<img src="./img/local_warped_motion_math9.png" />, <img src="./img/local_warped_motion_math10.png" /> and
-<img src="./img/local_warped_motion_math11.png" /> using a
+![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{11},h_{12},h_{21}}) and
+![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{22}}) using a
 least squares approach, consider the example shown in Figure 1 below.
 
-<div align="center">
-  <img src="./img/local_warped_motion_fig1.png" />
+![local_warped_motion_fig1](./img/local_warped_motion_fig1.png)
 
 ##### Figure 1. Current block in yellow is a 32x32 block. Neighboring blocks that refer to the same reference picture as the current block are in blue. MVs (in orange) for the current block and the blue blocks are used to infer the local warp motion of the yellow block.
-</div>
 
 In the following, assume the x and y coordinates are specified with
 reference to the top left corner of the yellow block. Let
-<img src="./img/local_warped_motion_math12.png" /> be the center of the current block, and
-<img src="./img/local_warped_motion_math13.png" /> the projection of \(C\) onto the reference frame using
+![math12](./img/local_warped_motion_math12.png) be the center of the current block, and
+![math13](./img/local_warped_motion_math13.png) the projection of (C) onto the reference frame using
 the motion vector **MV** for the current block. According to the motion
 model:
 
-<div align="center">
-<img src="./img/local_warped_motion_math14.png" />
-</div>
+![local_warped_motion_math14](./img/local_warped_motion_math14.png)
 
-For block 6, define <img src="./img/local_warped_motion_math15.png" /> to be the center of block 6, and
-<img src="./img/local_warped_motion_math16.png" /> to be the projection of <img src="./img/local_warped_motion_math17.png" /> onto the reference
-frame using the mv **MV<sub>6</sub>** for block 6. Assuming the same
+For block 6, define ![local_warped_motion_math15](./img/local_warped_motion_math15.png) to be the center of block 6, and
+![local_warped_motion_math16](./img/local_warped_motion_math16.png) to be the projection of ![latexmath](http://latex.codecogs.com/gif.latex?C_6}) onto the reference
+frame using the mv ![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{MV_6}) for block 6. Assuming the same
 motion model as above, it follows that:
 
-<div align="center">
-<img src="./img/local_warped_motion_math18.png" />
-</div>
+![local_warped_motion_math18](./img/local_warped_motion_math18.png)
 
 Taking the difference between the two equations above:
 
-<div align="center">
-<img src="./img/local_warped_motion_math19.png" />
-</div>
+![local_warped_motion_math19](./img/local_warped_motion_math19.png)
 
-The local warp transformation defines how the vector relating <img src="./img/local_warped_motion_math20.png" /> and
-<img src="./img/local_warped_motion_math17.png" /> in the source frame is projected into the vector relating <img src="./img/local_warped_motion_math21.png" /> and <img src="./img/local_warped_motion_math22.png" /> in the reference frame.
+The local warp transformation defines how the vector relating ![latexmath](http://latex.codecogs.com/gif.latex?C) and
+![latexmath](http://latex.codecogs.com/gif.latex?C_6) in the source frame is projected into the vector relating ![latexmath](http://latex.codecogs.com/gif.latex?C') and ![latexmath](http://latex.codecogs.com/gif.latex?C'_6) in the reference frame.
 
-<div align="center">
-<img src="./img/local_warped_motion_math23.png" />= <img src="./img/local_warped_motion_math24.png" />  where  <img src="./img/local_warped_motion_math25.png" />
-</div>
+![local_warped_motion_math23](./img/local_warped_motion_math23.png) = ![local_warped_motion_math24](./img/local_warped_motion_math24.png) where ![local_warped_motion_math25](./img/local_warped_motion_math25.png)
 
-The vectors <img src="./img/local_warped_motion_math26.png" /> and
-<img src="./img/local_warped_motion_math23.png" /> are shown in purple in Figure 1.
+The vectors ![local_warped_motion_math26](./img/local_warped_motion_math26.png) and
+![local_warped_motion_math23](./img/local_warped_motion_math23.png) are shown in purple in Figure 1.
 The steps above are then repeated for blocks 5 and 3. The least squares
 minimization problem is then broken into two estimation problems: One of the estimation problems is to determine
-the parameters <img src="./img/local_warped_motion_math27.png" /> and the other is to estimate the parameters
-<img src="./img/local_warped_motion_math28.png" /> such that
-A<sub>1</sub>H<sub>1</sub> = B<sub>1</sub> and
-A<sub>2</sub>H<sub>2</sub>=B<sub>2</sub> where the matrices
-A<sub>1</sub>, B<sub>1</sub>, A<sub>2</sub> and B<sub>2</sub> are
-constructed from the data above. The solutions to the least squares
-estimation problems are then given as H<sub>1</sub> =
-(A<sub>1</sub>’A<sub>1</sub>)<sup>-1</sup> A<sub>1</sub>B<sub>1</sub>
-and H<sub>2</sub> = (A<sub>2</sub>’A<sub>2</sub>) <sup>-1</sup>
-A<sub>2</sub>B<sub>2</sub>.
+the parameters ![local_warped_motion_math27](./img/local_warped_motion_math27.png) and the other is to estimate the parameters
+![local_warped_motion_math28](./img/local_warped_motion_math28.png) such that
+
+![latexmath](http://latex.codecogs.com/gif.latex?A_1H_1=B_1) and ![latexmath](http://latex.codecogs.com/gif.latex?A_2H_2=B_2)
+where the matrices ![latexmath](http://latex.codecogs.com/gif.latex?A_1,B_1,A_2) and ![latexmath](http://latex.codecogs.com/gif.latex?B_2)
+are constructed from the data above. The solutions to the least squares
+estimation problems are then given as
+![latexmath](http://latex.codecogs.com/gif.latex?H_1=({A_1}'A_1)^{-1}A_1B_1) and ![latexmath](http://latex.codecogs.com/gif.latex?H_2=({A_2}'A_2)^{-1}A_2B_2)
 
 For implementation purposes, the local warp transform is implemented as
 two shears: A horizontal shear and vertical shear. The model matrix H is
 then decomposed as follows:
 
-<div align="center">
-<img src="./img/local_warped_motion_math29.png" />
-</div>
+![local_warped_motion_math29](./img/local_warped_motion_math29.png)
 
-where <img src="./img/local_warped_motion_math30.png" /> are shear
+where ![latexmath](http://latex.codecogs.com/gif.latex?\alpha,\beta,\Delta,\gamma) are shear
 model parameters. The Vertical shear is given by the following model:
 
-<div align="center">
-<img src="./img/local_warped_motion_math31.png" />
-</div>
+![local_warped_motion_math31](./img/local_warped_motion_math31.png)
 
 whereas the horizontal shear is given by:
-<div align="center">
-<img src="./img/local_warped_motion_math32.png" />
-</div>
+
+![local_warped_motion_math32](./img/local_warped_motion_math32.png)
 
 The combined transform is given by:
 
-<div align="center">
-<img src="./img/local_warped_motion_math33.png" />
-</div>
+![local_warped_motion_math33](./img/local_warped_motion_math33.png)
 
-The shear parameters <img src="./img/local_warped_motion_math30.png" /> are determined based on the parameters
-<img src="./img/local_warped_motion_math8.png" />,
-<img src="./img/local_warped_motion_math9.png" />, <img src="./img/local_warped_motion_math10.png" /> and
-<img src="./img/local_warped_motion_math11.png" />. Subpel displacements that results from the application of
+The shear parameters ![latexmath](http://latex.codecogs.com/gif.latex?\alpha,\beta,\Delta,\gamma) are determined based on the parameters
+![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{11},h_{12},h_{21}}) and
+![latexmath](http://latex.codecogs.com/gif.latex?\mathbf{h_{22}}). Subpel displacements that results from the application of
 the horizontal and vertical shears are evaluated using 8-tap
-interpolation filters with 1/64<sup>th</sup> pel precision.
+interpolation filters with ![latexmath](http://latex.codecogs.com/gif.latex?1/64^{th}) pel precision.
 
 The final warped motion model is applied on an 8x8 basis in the source
 frame. The predicted block is constructed by assembling the 8x8
 predicted warped blocks from the reference picture.
 
-<div align="center">
-<img src="./img/local_warped_motion_fig2.png" />
+![local_warped_motion_fig2](./img/local_warped_motion_fig2.png)
 
 ##### Figure 2. The horizontal, vertical, and combined shears respectively.
-</div>
 
 At the decoder side, the affine transform parameters are derived at the
 block-level using as input the motion vectors of the current and
@@ -161,6 +134,7 @@ indicated in Table 1.
 | \-local-warp                  | Config / Sequence            | Encoder configuration parameter to enable/disable LW |
 | allow\_warped\_motion         | Picture                      | Enable/disable LW                          |
 
+
 **Details of the implementation**
 
 As with other prediction mode candidates in the encoder, candidates
@@ -169,9 +143,8 @@ several MD stages of RD optimization. A high-level diagram of the
 function calls relevant to the two main LW functions, namely
 ```inject_inter_candidates``` and ```warped_motion_prediction``` is given in
 Figure 3 below.
-<p align="center">
-  <img src="./img/local_warped_motion_fig3.png" />
-</p>
+
+![local_warped_motion_fig3](./img/local_warped_motion_fig3.png)
 
 ##### Figure 3. Function calls relevant to the two main LW functions highlighted in blue.
 
@@ -184,9 +157,7 @@ are outlined in the following.
 The injection is performed by the function ```inject_inter_candidates```.
 A diagram of the relevant function calls is given in Figure 4.
 
-<p align="center">
-  <img src="./img/local_warped_motion_fig4.png" />
-</p>
+![local_warped_motion_fig4](./img/local_warped_motion_fig4.png)
 
 ##### Figure 4. Continuation of Figure 3 with the function calls related to the injection of LW candidates.
 
@@ -248,9 +219,7 @@ The generation of the LW predictions in MD is performed using the
 function *warped\_motion\_prediction*. A diagram of the associated
 function call is shown in Figure 5 below.
 
-<p align="center">
-  <img src="./img/local_warped_motion_fig5.png" />
-</p>
+![local_warped_motion_fig5](./img/local_warped_motion_fig5.png)
 
 ##### Figure 5. Continuation of Figure 3 with the function calls related to the evaluation of the LW predictions in MD.
 
@@ -326,35 +295,14 @@ is set in signal_derivation_enc_dec_kernel_oq as shown in Table 2 below:
 In mode decision, the picture-level flag allow_warped_motion is set in
 signal_derivation_mode_decision_config_kernel_oq as shown in Table 3 below.
 
+
 ##### Table 3. enable_wm setting as a function of encoder preset.
-<table>
-  <tr>
-    <td rowspan="2"><strong>Encoder Preset (enc_mode)</strong></td>
-    <td colspan="2"; align="center"><strong>enable_wm</strong></td>
-  </tr>
-  <tr>
-    <td><strong>sc_content_detected = 0</strong></td>
-    <td><strong>sc_content_detected = 1</strong></td>
-  </tr>
-  <tr>
-    <td>M0</td>
-    <td>1</td>
-    <td>0</td>
-  </tr>
-  <tr>
-    <td>M1-M5</td>
-    <td>if (temporal_layer_index == 0) then 1, else 0. </td>
-    <td>0</td>
-  </tr>
-  <tr>
-    <td>Otherwise</td>
-    <td>0</td>
-    <td>0</td>
-  </tr>
-</table>
+
+![table3](./img/local_warped_motion_table3.png)
 
 The final setting for allow_warped_motion is determined as follows: allow_warped_motion =
 enable_wm AND not KEY_FRAME AND not INTRA_ONLY_FRAME and not error_resilient_mode.
+
 
 ## 4.  Signaling
 

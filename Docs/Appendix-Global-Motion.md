@@ -11,30 +11,26 @@ the key steps involved in estimating global motion comprise identifying
 features in both images, matching the identified features, and
 estimating global motion parameters based on the matched features.
 
-<p align="center">
-  <img src="./img/gm_fig1.png" />
-</p>
+![gm_fig1](./img/gm_fig1.png)
 
 ##### Figure 1. Example of global motion between two frames involving translation and rotation motion.
 
 The general motion model is given by:
 
-<p align="center">
-  <img src="./img/gm_math1.png" />
-</p>
+![gm_math1](./img/gm_math1.png)
 
-where <img src="./img/gm_math2.png" /> and <img src="./img/gm_math3.png" /> are the pixel coordinates in the current and reference
+where ![gm_math2](./img/gm_math2.png) and ![gm_math3](./img/gm_math3.png) are the pixel coordinates in the current and reference
 frames, respectively. The supported motion models include:
 
-  - Affine projection: <img src="./img/gm_math4.png" />. This
+  - Affine projection: ![gm_math4](./img/gm_math4.png). This
     transformation preserves parallelism and has six parameters to
     estimate.
 
-  - Rotation-zoom projection: <img src="./img/gm_math5.png" />, which
+  - Rotation-zoom projection: ![gm_math5](./img/gm_math5.png), which
     corresponds rotation + scaling. This transformation preserves
     angles and has four parameters to estimate.
 
-  - Translation: <img src="./img/gm_math6.png" /> . This transformation
+  - Translation: ![gm_math6](./img/gm_math6.png) . This transformation
     preserves orientation and size and has two parameters to estimate.
 
 The global motion estimation involves two main steps. The first step
@@ -98,6 +94,7 @@ algorithm are as follows:
   - The process stops when the number of outliers is below a specified
     threshold.
 
+
 ## 2.  Implementation of the algorithm
 
 **Input to motion\_estimation\_kernel**: Input frames of the stream.
@@ -112,35 +109,14 @@ encoded blocks if they provide a cost advantage.
 
 **Control macros/flags**:
 
+
 ##### Table 1. Control flags associated with global motion compensation.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>Flag</strong></th>
-<th><strong>Level (Sequence/Picture)</strong></th>
-<th><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>GLOBAL_WARPED_MOTION</td>
-<td>Compilation time macro</td>
-<td><p>Macro to enable global warped motion estimation and mode insertion.</p>
-<p>When disabled, it restores the previous global motion implementation which only supports the TRANSLATION mode.</p></td>
-</tr>
-<tr class="even">
-<td>compute_global_motion</td>
-<td>Sequence</td>
-<td>Controls whether global motion parameters should be computed.</td>
-</tr>
-<tr class="odd">
-<td>global_mv_injection</td>
-<td>Sequence</td>
-<td>Controls whether global motion candidates should be estimated.</td>
-</tr>
-</tbody>
-</table>
+|Flag|Level (Sequence/Picture)|Description|
+|--- |--- |--- |
+|GLOBAL_WARPED_MOTION|Compilation time macro|Macro to enable global warped motion estimation and mode insertion. When disabled, it restores the previous global motion implementation which only supports the TRANSLATION mode.|
+|compute_global_motion|Sequence|Controls whether global motion parameters should be computed.|
+|global_mv_injection|Sequence|Controls whether global motion candidates should be estimated.|
 
 ### Details of the implementation
 
@@ -149,9 +125,7 @@ estimation and mode decision.
 
 #### Global motion estimation
 
-<p align="center">
-  <img src="./img/gm_fig2.png" />
-</p>
+![gm_fig2](./img/gm_fig2.png)
 
 ##### Figure 2. Main function calls associated with global motion estimation.
 
@@ -208,6 +182,7 @@ is kept only if the potential rate-distortion gain is significant. This decision
 by the ```av1_is_enough_erroradvantage``` function thanks to the computed frame error, the storage
 cost of the global motion parameters and empirical thresholds.
 
+
 The AV1 specifications define four global motion types:
 
   - IDENTITY for an identity model,
@@ -228,9 +203,7 @@ predictors.
 A summary of the main function calls associated with global motion
 compensation in MD is given in Figure 3.
 
-<p align:"center">
-    <img src = "./img/gm_fig3.png" />
-</p>
+![gm_fig3](./img/gm_fig3.png)
 
 ##### Figure 3. Main function calls associated with global motion compensation in MD.
 
@@ -248,8 +221,8 @@ enabled and for the case where it is not.
 
 The two main steps involved in MD are the injection of GLOBAL and GLOBAL_GLOBAL candidates, and the processing of those candidates through MD stages 0 to 2. The conditions for the injection of GLOBAL candidates are as follows:
 For the case where gm_level <= GM_DOWN:
-1.  The global motion vector points inside the current tile AND
-2.  (((Transformation Type > TRANSLATION AND block width >= 8 AND  block height >= 8) OR Transformation type <= TRANSLATION))
+1.	The global motion vector points inside the current tile AND
+2.	(((Transformation Type > TRANSLATION AND block width >= 8 AND  block height >= 8) OR Transformation type <= TRANSLATION))
 
 Otherwise, only condition 1 above applies.
 
@@ -257,9 +230,9 @@ The conditions for the injection of GLOBAL_GLOBAL candidates are as follows:
 
 For the case where gm_level <= GM_DOWN:
 
-1.  isCompoundEnabled (i.e. compound reference mode) AND
-2.  allow_bipred (i.e. block height > 4 or block width > 4) AND
-3.  (List_0 Transformation type > TRANSLATION AND List_1 Transformation type > TRANSLATION))
+1.	isCompoundEnabled (i.e. compound reference mode) AND
+2.	allow_bipred (i.e. block height > 4 or block width > 4) AND
+3.	(List_0 Transformation type > TRANSLATION AND List_1 Transformation type > TRANSLATION))
 
 Otherwise, only conditions 1 and 2 above apply.
 
@@ -275,6 +248,8 @@ With respect to ranking the global motion candidates, the current implementation
 uses the specific class (```CAND_CLASS_8```) that adds a dedicated path for those candidates.
 This allows some of the those candidates to survive until the last and most costly stage
 of the mode decision process.
+
+
 
 ## 3.  Optimization of the algorithm
 
@@ -313,6 +288,7 @@ The settings of the flag depend on the PD pass, as summarized in Table 4.
 | 0 or 1                        | 0                                                                  |
 | OTHERWISE                     | if (enable_global_motion AND (enc_mode == ENC_M0)) then 1, else 0. |
 
+
 ## 4.  Signaling
 
 The global motion parameters are written in the bitstream for each
@@ -334,28 +310,13 @@ of them corresponds to coefficients of the affine transformation matrix.
 
 ##### Table 6. Global motion parameters signaled in the bitstream.
 
-<table>
-  <tr>
-    <td><strong>Frame level</strong></td>
-    <td><strong>Number of bits</strong></td>
-  </tr>
-  <tr>
-    <td>Global motion parameters:</td>
-    <td rowspan = 5; align="center">Up to 12</td>
-  </tr>
-  <tr>
-    <td>0 parameter for IDENTITY</td>
-  </tr>
-  <tr>
-    <td>2 parameters for TRANSLATION</td>
-  </tr>
-  <tr>
-    <td>4 parameters for ROTZOOM</td>
-  </tr>
-  <tr>
-    <td>6 parameters for AFFINE</td>
-  </tr>
-</table>
+|**Frame level**|**Number of bits**|
+|--- |--- |
+|Global motion parameters:|Up to 12|
+|0 parameter for IDENTITY|Up to 12|
+|2 parameters for TRANSLATION|Up to 12|
+|4 parameters for ROTZOOM|Up to 12|
+|6 parameters for AFFINE|Up to 12|
 
 ## References
 

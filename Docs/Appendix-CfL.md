@@ -9,22 +9,18 @@ reconstructed luma sample values, where the reconstructed luma samples are
 sub-sampled to match the chroma sub-sampling. The chroma prediction is
 given by
 
-<p align="center">
-  <img src="./img/cfl_appendix_math1.png" />
-</p>
+![math](http://latex.codecogs.com/gif.latex?Chroma_{pred}=\alpha*Luma_{recon}+\beta)
 
-where  <img src="./img/cfl_appendix_math2.png" /> and <img src="./img/cfl_appendix_math3.png" /> are predicted chroma
-and reconstructed luma samples, respectively. The parameters <img src="./img/cfl_appendix_math4.png" /> and <img src="./img/cfl_appendix_math5.png" /> can be
+where  ![math](http://latex.codecogs.com/gif.latex?Chroma_{pred}) and ![math](http://latex.codecogs.com/gif.latex?Luma_{recon}) are predicted chroma
+and reconstructed luma samples, respectively. The parameters ![math](http://latex.codecogs.com/gif.latex?\alpha) and ![math](http://latex.codecogs.com/gif.latex?\beta) can be
 determined (at least theoretically) using least squares regression. The feature provides gains in screen sharing
 applications.
 
 In practice, the CfL prediction is performed as illustrated in Figure 1 below.
 
-<p align="center">
-  <img src="./img/cfl_appendix_fig1.png" />
-</p>
+![cfl_appendix_fig1](./img/cfl_appendix_fig1.png)
 
-##### <p align="center">  Figure 1. Block diagram of the chroma from luma prediction process. </p>
+##### Figure 1. Block diagram of the chroma from luma prediction process.
 
 The steps illustrated in the diagram above can be summarized as follows:
 
@@ -33,28 +29,26 @@ The steps illustrated in the diagram above can be summarized as follows:
   - Reconstructed luma samples are sub-sampled to match the chroma
     sub-sampling.
 
-  - Calculate the <img src="./img/cfl_appendix_math6.png" /> (i.e. average) of the
+  - Calculate the ![math6](./img/cfl_appendix_math6.png) (i.e. average) of the
     reconstructed luma sample values.
 
-  - Subtract the <img src="./img/cfl_appendix_math6.png" /> from the reconstructed luma
+  - Subtract the ![math6](./img/cfl_appendix_math6.png) from the reconstructed luma
     sample values to generate the AC reconstructed luma sample values,
-    <img src="./img/cfl_appendix_math7.png" /> , which has a zero average.
+    ![math7](./img/cfl_appendix_math7.png) , which has a zero average.
 
-  - Compute <img src="./img/cfl_appendix_math8.png" /> and <img src="./img/cfl_appendix_math9.png" /> using the
+  - Compute ![math8](./img/cfl_appendix_math8.png) and ![math9](./img/cfl_appendix_math9.png) using the
     AC reconstructed luma sample values.
 
-  - Compute the intra DC mode chroma prediction, <img src="./img/cfl_appendix_math10.png" />. The final chroma from
+  - Compute the intra DC mode chroma prediction, ![math10](./img/cfl_appendix_math10.png). The final chroma from
     luma prediction is then given by:
 
-<p align="center">
-      <img src="./img/cfl_appendix_math11.png" />
-</p>
+![math11](./img/cfl_appendix_math11.png)
 
 ## 2.  Implementation of the algorithm
 
 **Inputs**: Intra chroma code, luma inverse quantized residuals
 
-**Outputs**: Best <img src="./img/cfl_appendix_math4.png" /> and chroma residuals
+**Outputs**: Best ![math](http://latex.codecogs.com/gif.latex?\alpha) and chroma residuals
 
 **Control macros/flags**:
 
@@ -65,16 +59,12 @@ The steps illustrated in the diagram above can be summarized as follows:
 
 **Details of the implementation**
 
-<p align="center">
-      <img src="./img/CfL_fig2.png" />
-</p>
+![CfL_fig2](./img/CfL_fig2.png)
 
 ##### Figure 2. The main function calls leading to CfL prediction. The functions highlighted in blue are where CfL prediction takes place.
 
 
-<p align="center">
-      <img src="./img/CfL_fig3.png" />
-</p>
+![CfL_fig3](./img/CfL_fig3.png)
 
 ##### Figure 3. Continuation of Figure 2 showing the details of CfL processing in the function CfLPrediction.
 
@@ -103,36 +93,32 @@ function. Then the AC luma values are calculated by subtracting the DC luma
 value using the ```eb_subtract_average``` function. The resulting AC values are stored
 in the ```pred_buf_q3 buffer```.
 
-**Step 3**: Find the best <img src="./img/cfl_appendix_math4.png" />
+**Step 3**: Find the best ![math](http://latex.codecogs.com/gif.latex?\alpha)
 
-The best <img src="./img/cfl_appendix_math4.png" /> values for the chroma components are calculated by
+The best ![math](http://latex.codecogs.com/gif.latex?\alpha) values for the chroma components are calculated by
 minimizing the overall full cost. The algorithm performs a search over the 16 possible
-values of <img src="./img/cfl_appendix_math4.png" /> and finds the best value that minimizes the joint prediction cost.
+values of ![math](http://latex.codecogs.com/gif.latex?\alpha) and finds the best value that minimizes the joint prediction cost.
 The search is performed in the context of a joint sign between the two chroma components.
-After the best value for <img src="./img/cfl_appendix_math4.png" /> is calculated, the joint cost is compared with the cost of DC prediction and the winner is selected.
+After the best value for ![math](http://latex.codecogs.com/gif.latex?\alpha) is calculated, the joint cost is compared with the cost of DC prediction and the winner is selected.
 
 
 **Step 4**: Generate the chroma prediction
 
-After the best <img src="./img/cfl_appendix_math4.png" /> is selected, the prediction using the
+After the best ![math](http://latex.codecogs.com/gif.latex?\alpha) is selected, the prediction using the
 CfL mode is performed using the ```eb_cfl_predict``` function. The chroma
 residuals are then calculated using the function ```residual_kernel```.
 
 ## 3.  Optimization of the algorithm
 
-Finding the best <img src="./img/cfl_appendix_math4.png" /> requires searching different
-values in the set of allowed <img src="./img/cfl_appendix_math4.png" /> values and calculating the cost
-associated with each value. Performing this <img src="./img/cfl_appendix_math4.png" /> search
+Finding the best ![math](http://latex.codecogs.com/gif.latex?\alpha) requires searching different
+values in the set of allowed ![math](http://latex.codecogs.com/gif.latex?\alpha) values and calculating the cost
+associated with each value. Performing this ![math](http://latex.codecogs.com/gif.latex?\alpha) search
 process in MD for every luma mode and block size
 at MD would be very complex. In order to find the best quality-speed
 trade off, there is an option to perform the selection of the best
-<img src="./img/cfl_appendix_math4.png" /> at the encode pass and only on the final chosen intra coding mode.
+![math](http://latex.codecogs.com/gif.latex?\alpha) at the encode pass and only on the final chosen intra coding mode.
 This option is signaled using the ```evaluate_cfl_ep flag```. The flag depends on the chroma
 level, which in turn depends on the chroma mode. The description of the chroma mode settings is given in Table 2.
-
-
-
-
 
 ##### Table 2. Chroma mode description.
 
@@ -144,52 +130,11 @@ level, which in turn depends on the chroma mode. The description of the chroma m
 | CHROMA_MODE_3 (3)                 | Chroma blind @ MD + no CfL @ Encode Pass                |
 
 
-tThe chroma_level settings as a function of the encoder settings are given in Table 3.
+The chroma_level settings as a function of the encoder settings are given in Table 3.
 
 ##### Table 3. chroma_level settings and description.
 
-<table>
-<thead>
-<tr class="header">
-<th><strong>PD_PASS</strong></th>
-<th><strong>set_chroma_mode</strong></th>
-<th><strong>chroma_level</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>PD_PASS_0</td>
-<td> - </td>
-<td>CHROMA_MODE_2</td>
-</tr>
-<tr class="even">
-<td>PD_PASS_1</td>
-<td>-</td>
-<td>if (temporal_layer_index == 0) then CHROMA_MODE_0</br>
-else CHROMA_MODE_1</td>
-</tr>
-<tr class="odd">
-<td rowspan=2>PD_PASS_2</td>
-<td>DEFAULT</td>
-<td>
-if sc_content_detected not set then</br>
-&nbsp;&nbsp;if enc_mode == ENC_M0 then CHROMA_MODE_0</br>
-&nbsp;&nbsp;else if enc_mode <= ENC_M4 then CHROMA_MODE_1</br>
-&nbsp;&nbsp;else if encoder_bit_depth == EB_8BIT then CHROMA_MODE_2</br>
-&nbsp;&nbsp;else CHROMA_MODE_3</br>
-else if sc_content_detected is set then</br>
-&nbsp;&nbsp;if enc_mode <= ENC_M6 then CHROMA_MODE_1</br>
-&nbsp;&nbsp;else if temporal_layer_index == 0 then CHROMA_MODE_1</br>
-&nbsp;&nbsp;else if encoder_bit_depth == EB_8BIT then CHROMA_MODE_2</br>
-&nbsp;&nbsp;else CHROMA_MODE_3
-</td>
-</tr>
-<tr class="even">
-<td>Otherwise</td>
-<td>set_chroma_mode</td>
-</tr>
-</tbody>
-</table>
+![table3](./img/cfl_appendix_table3.png)
 
 The settings of evaluate_cfl_ep as a function of chroma _level are as indicated in Table 4.
 
