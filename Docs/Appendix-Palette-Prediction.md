@@ -84,7 +84,7 @@ The main function calls associated with palette mode prediction are indicated in
 
 The following steps are then considered in the generation of palette prediction candidates.
 
-1.	In the function ```generate_md_stage_0_cand```, a candidate for palette prediction is
+1.  In the function ```generate_md_stage_0_cand```, a candidate for palette prediction is
     first evaluated to determine if the palette mode is allowed (svt_av1_allow_palette).
     The use of palette prediction mode is allowed if (palette_mode different from 0 AND block
     width <= 64 AND block height <= 64 AND block size at least 8x8.)

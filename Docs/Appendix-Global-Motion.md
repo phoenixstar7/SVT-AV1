@@ -221,8 +221,8 @@ enabled and for the case where it is not.
 
 The two main steps involved in MD are the injection of GLOBAL and GLOBAL_GLOBAL candidates, and the processing of those candidates through MD stages 0 to 2. The conditions for the injection of GLOBAL candidates are as follows:
 For the case where gm_level <= GM_DOWN:
-1.	The global motion vector points inside the current tile AND
-2.	(((Transformation Type > TRANSLATION AND block width >= 8 AND  block height >= 8) OR Transformation type <= TRANSLATION))
+1.  The global motion vector points inside the current tile AND
+2.  (((Transformation Type > TRANSLATION AND block width >= 8 AND  block height >= 8) OR Transformation type <= TRANSLATION))
 
 Otherwise, only condition 1 above applies.
 
@@ -230,9 +230,9 @@ The conditions for the injection of GLOBAL_GLOBAL candidates are as follows:
 
 For the case where gm_level <= GM_DOWN:
 
-1.	isCompoundEnabled (i.e. compound reference mode) AND
-2.	allow_bipred (i.e. block height > 4 or block width > 4) AND
-3.	(List_0 Transformation type > TRANSLATION AND List_1 Transformation type > TRANSLATION))
+1.  isCompoundEnabled (i.e. compound reference mode) AND
+2.  allow_bipred (i.e. block height > 4 or block width > 4) AND
+3.  (List_0 Transformation type > TRANSLATION AND List_1 Transformation type > TRANSLATION))
 
 Otherwise, only conditions 1 and 2 above apply.
 

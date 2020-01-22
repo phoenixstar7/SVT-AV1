@@ -1,103 +1,85 @@
 # Encoder Design for SVT-AV1 (Scalable Video Technology for AV1 Encoder)
 
 ## Table of Contents
-- [Encoder Design for SVT-AV1 (Scalable Video Technology for AV1 Encoder)](#encoder-design-for-svt-av1-scalable-video-technology-for-av1-encoder)
-  - [Table of Contents](#table-of-contents)
-  - [List of Figures](#list-of-figures)
-  - [List of Tables](#list-of-tables)
-  - [Introduction](#introduction)
-  - [Definitions](#definitions)
-    - [General Definitions](#general-definitions)
-    - [Source Partitioning](#source-partitioning)
-        - [Figure 1: Five-layer prediction structure used in the SVT-AV1 encoder with one reference picture in each direction.](#figure-1-five-layer-prediction-structure-used-in-the-svt-av1-encoder-with-one-reference-picture-in-each-direction)
-        - [Figure 2: Picture partitioning diagram.](#figure-2-picture-partitioning-diagram)
-  - [High-level encoder architecture](#high-level-encoder-architecture)
-        - [Figure 3. High-level encoder process dataflow.](#figure-3-high-level-encoder-process-dataflow)
-        - [Figure 4. Detailed encoder process dataflow.](#figure-4-detailed-encoder-process-dataflow)
-        - [Figure 5. Illustration of segment-based processing: The squares in the picture represent segments. Light yellow segments have already been processed. Dark yellow segments are being processed in a parallel manner.](#figure-5-illustration-of-segment-based-processing-the-squares-in-the-picture-represent-segments-light-yellow-segments-have-already-been-processed-dark-yellow-segments-are-being-processed-in-a-parallel-manner)
-  - [Inter-process data and control management](#inter-process-data-and-control-management)
-        - [Figure 6: System resource manager dataflow.](#figure-6-system-resource-manager-dataflow)
-    - [Objects](#objects)
-    - [Sequence Control Set](#sequence-control-set)
-    - [Picture Control Set](#picture-control-set)
-    - [Picture Descriptors](#picture-descriptors)
-    - [Results](#results)
-  - [System Resource Manager (SRM)](#system-resource-manager-srm)
-    - [Resource manager components](#resource-manager-components)
-      - [Empty object FIFO](#empty-object-fifo)
-      - [Producer empty object FIFO](#producer-empty-object-fifo)
-      - [Producer process](#producer-process)
-      - [Producer process FIFO](#producer-process-fifo)
-      - [Full object FIFO](#full-object-fifo)
-      - [Consumer full object FIFO](#consumer-full-object-fifo)
-      - [Consumer process](#consumer-process)
-      - [Consumer process FIFO](#consumer-process-fifo)
-    - [Resource manager execution flow snapshot](#resource-manager-execution-flow-snapshot)
-  - [High-level Data Structures](#high-level-data-structures)
-    - [Configuration Set](#configuration-set)
-        - [ Table 1: Examples of Configuration Set Members. ](#table-1-examples-of-configuration-set-members)
-    - [Sequence Control Set (SCS)](#sequence-control-set-scs)
-        - [ Table 2: Examples of Sequence Control Set Members ](#table-2-examples-of-sequence-control-set-members)
-    - [Picture Control Set (PCS)](#picture-control-set-pcs)
-        - [ Table 3: Examples of Picture Parent Control Set Members ](#table-3-examples-of-picture-parent-control-set-members)
-    - [Picture Descriptors](#picture-descriptors-1)
-        - [ Table 4: Examples of Picture Descriptor Members ](#table-4-examples-of-picture-descriptor-members)
-  - [Encoder Processes and Algorithms](#encoder-processes-and-algorithms)
-    - [Resource Coordination Process](#resource-coordination-process)
-    - [Picture Analysis Process](#picture-analysis-process)
-    - [Statistical Moments](#statistical-moments)
-    - [Picture Decision Process](#picture-decision-process)
-        - [Figure 7: Picture decision process dataflow.](#figure-7-picture-decision-process-dataflow)
-        - [Figure 8. An example of a four-layer prediction structure.](#figure-8-an-example-of-a-four-layer-prediction-structure)
-        - [ Table 5: Settings for the show_frame and Show_existing_frame flags when encoding one mini-GoP in a 4-layer prediction structure.](#table-5-settings-for-the-showframe-and-showexistingframe-flags-when-encoding-one-mini-gop-in-a-4-layer-prediction-structure)
-    - [Motion Estimation Process](#motion-estimation-process)
-    - [Hierarchical Motion Estimation](#hierarchical-motion-estimation)
-        - [Figure 9: Hierarchical motion estimation dataflow.](#figure-9-hierarchical-motion-estimation-dataflow)
-        - [Figure 10: Hierarchical motion estimation data illustration.](#figure-10-hierarchical-motion-estimation-data-illustration)
-    - [Search Center Selection](#search-center-selection)
-    - [Motion Estimation](#motion-estimation)
-        - [Figure 11: Search center select and motion estimation.](#figure-11-search-center-select-and-motion-estimation)
-        - [Figure 12: Motion estimation dataflow.](#figure-12-motion-estimation-dataflow)
-      - [Motion Estimation Integer Full-Search](#motion-estimation-integer-full-search)
-        - [Figure 13: Motion Estimation Integer Full-Search for the case of 64x64 SB. 4xN and Nx4 blocks are not included in this diagram to keep the presentation simple.](#figure-13-motion-estimation-integer-full-search-for-the-case-of-64x64-sb-4xn-and-nx4-blocks-are-not-included-in-this-diagram-to-keep-the-presentation-simple)
-      - [Motion Estimation Half-Pel Refinement](#motion-estimation-half-pel-refinement)
-        - [Figure 14: Half-Pel Refinement for the case of 64x64 SB. 4xN and Nx4 blocks are not included in this diagram to keep the presentation simple.](#figure-14-half-pel-refinement-for-the-case-of-64x64-sb-4xn-and-nx4-blocks-are-not-included-in-this-diagram-to-keep-the-presentation-simple)
-      - [Motion Estimation Quarter-Pel Refinement](#motion-estimation-quarter-pel-refinement)
-        - [Figure 15: Quarter-Pel Refinement for the case of 64x64 SB. 4xN and Nx4 blocks are not included in this diagram to keep the presentation simple.](#figure-15-quarter-pel-refinement-for-the-case-of-64x64-sb-4xn-and-nx4-blocks-are-not-included-in-this-diagram-to-keep-the-presentation-simple)
-    - [Initial Rate Control Process](#initial-rate-control-process)
-        - [Figure 16: Initial Rate Control Process Dataflow.](#figure-16-initial-rate-control-process-dataflow)
-    - [Source-based Operations Process](#source-based-operations-process)
-    - [Picture Manager Process](#picture-manager-process)
-        - [Figure 17: Picture Management Dataflow.](#figure-17-picture-management-dataflow)
-    - [Rate Control Process](#rate-control-process)
-    - [Partitioning, Mode Decision and Encoding](#partitioning-mode-decision-and-encoding)
-        - [Figure 18. Partitioning decision stages.](#figure-18-partitioning-decision-stages)
-        - [Figure 19. Example of the processing details in each PD stage.](#figure-19-example-of-the-processing-details-in-each-pd-stage)
-        - [Figure 20. Partitioning, mode decision, encoding and filtering tasks.](#figure-20-partitioning-mode-decision-encoding-and-filtering-tasks)
-    - [Mode Decision Configuration Process](#mode-decision-configuration-process)
-        - [ Table 6. Description of the picture depth mode settings. ](#table-6-description-of-the-picture-depth-mode-settings)
-        - [ Table 7. Blocks to be considered in MD as a function of picture depth mode. ](#table-7-blocks-to-be-considered-in-md-as-a-function-of-picture-depth-mode)
-    - [EncDec Process](#encdec-process)
-      - [Neighbor Array](#neighbor-array)
-        - [Figure 21: Neighbor array structure.](#figure-21-neighbor-array-structure)
-        - [Figure 22: Neighbor array data illustration.](#figure-22-neighbor-array-data-illustration)
-      - [Rate Estimation Tables](#rate-estimation-tables)
-      - [Candidate Types](#candidate-types)
-        - [Intra Candidates](#intra-candidates)
-        - [Inter Candidates](#inter-candidates)
-        - [Compound Candidates](#compound-candidates)
-      - [Encode SB](#encode-sb)
-        - [Mode Decision](#mode-decision)
-        - [Figure 23. MD flow in a single PD stage.](#figure-23-md-flow-in-a-single-pd-stage)
-        - [Encode SB](#encode-sb-1)
-    - [Loop Filter Process](#loop-filter-process)
-    - [Constrained Directional Enhancement Filter Process](#constrained-directional-enhancement-filter-process)
-    - [Restoration Filter Process](#restoration-filter-process)
-    - [Entropy Coding Process](#entropy-coding-process)
-    - [Packetization Process](#packetization-process)
-  - [Detailed Feature Implementation Design Appendices](#detailed-feature-implementation-design-appendices)
-  - [References](#references)
-  - [Legal Disclaimer](#legal-disclaimer)
+- [Revision History](#revision-history)
+- [Table of Contents](#table-of-contents)
+- [List of Figures](#list-of-figures)
+- [List of Tables](#list-of-tables)
+- [Introduction](#introduction)
+- [Definitions](#definitions)
+  * [General Definitions](#general-definitions)
+  * [Source Partitioning](#source-partitioning)
+- [High-level encoder architecture](#high-level-encoder-architecture)
+- [Inter-process data and control management](#inter-process-data-and-control-management)
+  * [Objects](#objects)
+    * [Sequence Control Set](#sequence-control-set)
+    * [Picture Control Set](#picture-control-set)
+    * [Picture Descriptors](#picture-descriptors)
+    * [Results](#results)
+  * [System Resource Manager (SRM)](#system-resource-manager-srm)
+    * [Resource manager components](#resource-manager-components)
+      * [Empty object FIFO](#empty-object-FIFO)
+      * [Producer empty object FIFO](#producer-empty-object-FIFO)
+      * [Producer process](#producer-process)
+      * [Producer process FIFO](#producer-process-FIFO)
+      * [Full object FIFO](#full-object-FIFO)
+      * [Consumer full object FIFO](#consumer-full-object-FIFO)
+      * [Consumer process](#consumer-process)
+      * [Consumer process FIFO](#consumer-process-FIFO)
+    * [Resource manager execution flow snapshot](#resource-manager-execution-flow-snapshot)
+  * [High-level Data Structures](#high-level-data-structures)
+    * [Configuration Set](#configuration-set)
+    * [Sequence Control Set (SCS)](#sequence-control-set-scs)
+    * [Picture Control Set (PCS)](#picture-control-set-pcs)
+    * [Picture Descriptors](#picture-descriptors)
+- [Encoder Processes and Algorithms](#encoder-processes-and-algorithms)
+  * [Resource Coordination Process](#resource-coordination-process)
+  * [Picture Analysis Process](#pictureanalysisprocess)
+    * [Statistical Moments](#statistical-moments)
+  * [Picture Decision Process](#picture-decision-process)
+  * [Motion Estimation Process](#motion-estimation-process)
+    * [Hierarchical Motion Estimation](#hierarchical-motion-estimation)
+    * [Search Center Selection](#search-center-selection)
+    * [Motion Estimation](#motion-estimation)
+      * [Motion Estimation Integer Full-Search](#motion-estimation-integer-full-search)
+      * [Motion Estimation Half-Pel Refinement](#motion-estimation-half-pel-refinement)
+      * [Motion Estimation Quarter-Pel Refinement](#motion-estimation-quarter-pel-refinement)
+  * [Initial Rate Control Process](#initial-rate-control-process)
+  * [Source-based Operations Process](#source-based-operations-process)
+  * [Picture Manager Process](#picture-manager-process)
+  * [Rate Control Process](#rate-control-process)
+  * [Partitioning, Mode Decision and Encoding](#partitioning,-mode-decision-and-encoding)
+    * [Mode Decision Configuration Process](#mode-decision-configuration-process)
+    * [EncDec Process](#encdec-process)
+      * [Neighbor Array](#neighbour-array)
+      * [Rate Estimation Tables](#rate-estimation-tables)
+      * [Candidate Types](#candidate-types)
+        * [Intra Candidates](#intra-candidates)
+        * [Inter Candidates](#inter-candidates)
+        * [Compound Candidates](#compound-candidates)
+      * [Encode SB](#encode-sb)
+        * [Encode SB](#endode-sb)
+        * [Encode SB](#encode-sb)
+  * [Loop Filter Process](#loop-filter-process)
+  * [Constrained Directional Enhancement Filter Process](#constrained-directional-enhancement-filter-process)
+  * [Restoration Filter Process](#restoration-filter-process)
+  * [Entropy Coding Process](#entropy-coding-process)
+  * [Packetization Process](#packetization-process)
+- [Detailed Feature Implementation Design Appendices](#detailed-feature-implementation-design-appendices)
+  * [Altref Appendix](Appendix Alt Refs)
+  * [CDEF Appendix](Appendix CDEF)
+  * [CfL Appendix](Appendix CfL)
+  * [Compliant Subpel Interpolation Filter Search Appendix](Appendix Compliant Subpel Interpolation Filter Search)
+  * [Deblocking Loop Filter (LF) Appendix](Appendix DLF)
+  * [Filter Intra Appendix](Appendix Filter Intra)
+  * [Global Motion Appendix](Appendix GM)
+  * [Intra Block Copy Appendix](Appendix Intra Block Copy)
+  * [Local Warped Motion appendix](Appendix Local Warped Motion)
+  * [OBMC Appendix](Appendix OBMC)
+  * [Palette Prediction Appendix](Appendix Palette Prediction)
+  * [Restoration Filter Appendix](Appendix Restoration Filter)
+  * [Subpel Interpolation in the Open Loop Motion Estimation Appendix](Appendix Subpel Interpolation Open Loop ME)
+- [Legal Disclaimer](#legal-disclaimer)
 
 ## List of Figures
 - [Figure 1](#figure-1): Five-layer prediction structure used in the SVT-AV1 encoder with one reference picture in each direction.
@@ -167,6 +149,7 @@ This section contains definitions used throughout this design document.
 | SAD  | Sum of absolute differences, representing the sum of absolute values of sample differences; distortion measurement. |
 | SSE  | Sum of squared sample error; distortion measurement. |
 
+
 ### Source Partitioning
 
 The source video is partitioned into various groupings of various spatial and temporal divisions.
@@ -182,23 +165,22 @@ and the picture’s relative position within the period. In the example shown in
 said to belong to temporal layer 0 or base layer, whereas pictures 1, 3, 5, 7, 9, 11, 13 and 15 are said to
 belong to the non-reference layer or temporal layer 4.
 
-<div align="center">
-  <a name = "figure-1"> </a>
-  <img src="./img/image1.png" />
-
+![image1](./img/image1.png)
+<a name = "figure-1"></a>
 ##### Figure 1: Five-layer prediction structure used in the SVT-AV1 encoder with one reference picture in each direction.
 
-</div>
+
 
 Figure 2 shows the relationship between Pictures, Tiles, SBs, blocks and
 transform blocks.
 
-<div align="center">
-  <a name = "figure-2"></a>
-  <img src="./img/image2.png" />
-
+![image2](./img/image2.png)
+<a name = "figure-2"></a>
 ##### Figure 2: Picture partitioning diagram.
-</div>
+
+
+
+
 
 ## High-level encoder architecture
 
@@ -266,27 +248,17 @@ A high-level diagram of the encoder pipeline is shown in Figure 3, with
 more details provided in Figure 4. An illustration of the segment level
 processing is shown in Figure 5.
 
-<div align="center">
-  <a name = "figure-3"></a>
-  <img src="./img/image3.png" />
-
+![image3](./img/image3.png)
+<a name = "figure-3"></a>
 ##### Figure 3. High-level encoder process dataflow.
-</div>
 
-<div align="center">
-  <a name = "figure-4"></a>
-  <img src="./img/image4.png" />
-
+![image4](./img/image4.png)
+<a name = "figure-4"></a>
 ##### Figure 4. Detailed encoder process dataflow.
-</div>
 
-<div align="center">
-  <a name = "figure-5"></a>
-  <img src="./img/image5.png" />
-
+![image5](./img/image5.png)
+<a name = "figure-5"></a>
 ##### Figure 5. Illustration of segment-based processing: The squares in the picture represent segments. Light yellow segments have already been processed. Dark yellow segments are being processed in a parallel manner.
-
-</div>
 
 ## Inter-process data and control management
 
@@ -320,12 +292,10 @@ and consumer processes require differing amounts of computational
 resources. In this case, a system resource manager may have N producers
 and M consumers where N is not equal to M.
 
-<div align="center">
-  <a name = "figure-6"></a>
-  <img src="./img/image6.png" />
-
+![image6](./img/image6.png)
+<a name = "figure-6"></a>
 ##### Figure 6: System resource manager dataflow.
-</div>
+
 
 ### Objects
 
@@ -416,12 +386,12 @@ encoder pipeline.
 
 #### Producer empty object FIFO
 
-The i<sup>th</sup> producer empty object FIFO contains empty objects
-that have been assigned to the i<sup>th</sup> producer process. The
-i<sup>th</sup> producer process requires an empty object from the
-i<sup>th</sup> producer empty object FIFO in order to begin execution.
-The i<sup>th</sup> producer empty object FIFO is hardwired to the
-i<sup>th</sup> producer process.
+The ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) producer empty object FIFO contains empty objects
+that have been assigned to the ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) producer process. The
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) producer process requires an empty object from the
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) producer empty object FIFO in order to begin execution.
+The ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) producer empty object FIFO is hardwired to the
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) producer process.
 
 #### Producer process
 
@@ -449,12 +419,12 @@ manage results objects have full object FIFOs.
 
 #### Consumer full object FIFO
 
-The j<sup>th</sup> consumer full object FIFO contains full objects that
-have been assigned to the j<sup>th</sup> consumer process. The
-j<sup>th</sup> consumer process requires an empty object from the
-j<sup>th</sup> consumer full object FIFO in order to begin execution.
-The j<sup>th</sup> consumer full object FIFO is hardwired to the
-j<sup>th</sup> consumer process.
+The ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{j^{th}}) consumer full object FIFO contains full objects that
+have been assigned to the ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{j^{th}}) consumer process. The
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{j^{th}}) consumer process requires an empty object from the
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{j^{th}}) consumer full object FIFO in order to begin execution.
+The ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{j^{th}}) consumer full object FIFO is hardwired to the
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{j^{th}}) consumer process.
 
 #### Consumer process
 
@@ -509,11 +479,11 @@ Note the following:
 carried out in the system resource code, while steps 4 and 5 are
 executed by the consumer process.
 
-- The i<sup>th</sup> producer process will not become active if the
-i<sup>th</sup> producer empty object FIFO contains no objects
+- The ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) producer process will not become active if the
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) producer empty object FIFO contains no objects
 
-- The i<sup>th</sup> consumer process will not become active if the
-i<sup>th</sup> consumer full object FIFO contains no objects
+- The ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) consumer process will not become active if the
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{i^{th}}) consumer full object FIFO contains no objects
 
 - The tangerine arrows depict the producer processes’ acquisition of
 empty objects and are not described in the execution flow snapshot
@@ -529,6 +499,7 @@ are used extensively throughout the encoder.
 
 The configuration sets are general settings that can be used to control
 the encoder externally.
+
 
 ##### <a name = "table-1"> Table 1: Examples of Configuration Set Members. </a>
 
@@ -617,6 +588,7 @@ data along with the current encoder settings to the Picture Analysis
 Processes. Encoder settings include, but are not limited to Bitrate
 Settings, Rate Control Mode of operation, etc.
 
+
 ### Picture Analysis Process
 
 The Picture Analysis processes perform the first stage of encoder
@@ -625,7 +597,7 @@ procedures, such as resampling, color space conversion, or tone mapping.
 The Picture Analysis processes can be multithreaded and as such can
 process multiple input pictures at a time. The encoder pre-analysis
 includes creating an n-bin histogram for the purpose of scene change
-detection, gathering the 1<sup>st</sup> and 2<sup>nd</sup> moment
+detection, gathering the ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{1^{st}}) and ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{2^{nd}}) moment
 statistics for each 8x8 block in the picture which are used to compute
 variance, input subsampling and screen content detection. All
 image-modifying functions should be completed before any
@@ -635,27 +607,29 @@ statistics-gathering functions begin.
 
 The statistical moments of a picture are useful in a number of
 algorithms in the encoder including rate control and mode decision
-configuration. A useful property of the 1<sup>st</sup> and
-2<sup>nd</sup> statistical moments is that blocks can be combined
+configuration. A useful property of the ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{1^{st}}) and
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{2^{nd}}) statistical moments is that blocks can be combined
 together to find the mean and variance of larger block sizes, so with
 the statistical moments of the 8x8 blocks, we can calculate the variance
 of all blocks in the SB that are larger than 8x8.
 
+
+
 Let the first and second moment-accumulations be defined as:
 
-*1<sup>st</sup> Moment*:
+*![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{1^{st}}) Moment*:
 
-<img src="http://latex.codecogs.com/gif.latex?Accum[X]=\sum_{i=0}^{N}X_{i}" border="0"/>
+![latex_math](http://latex.codecogs.com/gif.latex?Accum[X]=\sum_{i=0}^{N}X_{i})
 
-*2<sup>nd</sup> Moment*:
+*![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{2^{nd}}) Moment*:
 
-<img src="http://latex.codecogs.com/gif.latex?Accum[X^2]=\sum_{i=0}^{N}X^2_{i}" border="0"/>
+![latex_math](http://latex.codecogs.com/gif.latex?Accum[X^2]=\sum_{i=0}^{N}X^2_{i})
 
-Variance is normally calculated as
+Variance is normally calculated as:
 
-<img src ="http://latex.codecogs.com/gif.latex?Var(X)=E[(X-\mu)^2]" border="0"/>
+![latex_math](http://latex.codecogs.com/gif.latex?Var(X)=E[(X-\mu)^2])
 
-where, <img src ="http://latex.codecogs.com/gif.latex?X" border="0"/> is the input sample, and <img src ="http://latex.codecogs.com/gif.latex?\mu" border="0"/> is the mean of
+where, ![latex_math](http://latex.codecogs.com/gif.latex?X) is the input sample, and ![latex_math](http://latex.codecogs.com/gif.latex?\mu) is the mean of
 the input samples.
 
 This method requires an initial pass over the input samples to calculate
@@ -663,25 +637,26 @@ the mean, followed by a second pass to calculate the variance. However,
 an alternate method can be used that requires only a single pass over
 the input data:
 
-<img src ="http://latex.codecogs.com/gif.latex?Var(X)=E[X^2]-(E[X])^2" border="0"/>
+![latex_math](http://latex.codecogs.com/gif.latex?Var(X)=E[X^2]-(E[X])^2)
 
 This form can be made more efficient:
 
-Let <img src ="http://latex.codecogs.com/gif.latex?Var{(X)}'=N^2*Var(X)" border="0"/>
 
-where <img src ="http://latex.codecogs.com/gif.latex?N" border="0"/> is the number of samples
+Let ![latex_math](http://latex.codecogs.com/gif.latex?Var{(X)}'=N^2*Var(X))
+
+where ![latex_math](http://latex.codecogs.com/gif.latex?N) is the number of samples
 
 So,
 
-<img src ="http://latex.codecogs.com/gif.latex?Var{(X)}'=N^2*E[X^2]-N^2*(E[X])^2" border="0"/>
+![latex_math](http://latex.codecogs.com/gif.latex?Var{(X)}'=N^2*E[X^2]-N^2*(E[X])^2)
 
 It follows that
 
-<img src="http://latex.codecogs.com/gif.latex?Var(X)'=N*\sum_{i=0}^{N}X^2_{i}-\left ( \sum_{i=0}^NXi\right )^2" border="0"/>
+![latex_math](http://latex.codecogs.com/gif.latex?Var(X)'=N*\sum_{i=0}^{N}X^2_{i}-\left(\sum_{i=0}^NXi\right)^2)
 
 So the relative variance for an N-sized block can be calculated by:
 
-<img src ="http://latex.codecogs.com/gif.latex?Var(X)'=N*Accum[X^2]-Accum[X]^2" border="0"/>
+![latex_math](http://latex.codecogs.com/gif.latex?Var(X)'=N*Accum[X^2]-Accum[X]^2)
 
 The relative variance can be calculated from two accumulations over each
 region. In order to calculate the variance for all block sizes in a SB,
@@ -708,12 +683,9 @@ hold input pictures until they can be started into the Motion Estimation
 process while following the proper prediction structure. The data flow
 in the picture decision process is show in Figure 7.
 
-<div align="center">
-  <a name = "figure-7"></a>
-  <img src="./img/image7.png" />
-
+![image7](./img/image7.png)
+<a name = "figure-7"></a>
 ##### Figure 7: Picture decision process dataflow.
-</div>
 
 **Setting up the prediction structure**. To illustrate the process by
 which a prediction structure is implemented, an example showing a
@@ -721,17 +693,13 @@ four-layer prediction structure is shown in Figure 8. The prediction
 structure is implemented using the Show\_frame and Show\_existing\_frame
 flags, as shown in the table below.
 
-<div align="center">
-  <a name = "figure-8"></a>
-  <img src="./img/image8.png" />
-
+![image8](./img/image8.png)
+<a name = "figure-8"></a>
 ##### Figure 8. An example of a four-layer prediction structure.
-
-</div>
 
 ##### <a name = "table-5"> Table 5: Settings for the show\_frame and Show\_existing\_frame flags when encoding one mini-GoP in a 4-layer prediction structure.</a>
 
-| PicNumber | Show\_frame | Show\_existing\_frame | DPB        |
+| **PicNumber** | **Show\_frame** | **Show\_existing\_frame** | **DPB**        |
 | --------- | ----------- | --------------------- | ---------- |
 | 0         | 1           | 0                     | 0          |
 | 8         | 0           | 0                     | 8-0        |
@@ -805,20 +773,15 @@ decisions are based on a pure SAD distortion metric. Figure 10 depicts
 an example HME full search and refinement data flow through Level-0,
 Level-1, and Level-2.
 
-<div align="center">
-  <a name = "figure-9"></a>
-  <img src="./img/image9.png" />
+![image9](./img/image9.png)
+<a name = "figure-9"></a>
 
 ##### Figure 9: Hierarchical motion estimation dataflow.
 
-</div>
 
-<div align="center">
-  <a name = "figure-10"></a>
-  <img src="./img/image10.png" />
-
+![image10](./img/image10.png)
+<a name = "figure-10"></a>
 ##### Figure 10: Hierarchical motion estimation data illustration.
-</div>
 
 ### Search Center Selection
 
@@ -847,19 +810,13 @@ the SB SAD estimation using the base 8x8 block SAD data. The filters for
 each of the subsample locations can be configured independently as well
 as the Search Area width and height.
 
-<div align="center">
-  <a name = "figure-11"></a>
-  <img src="./img/image11.png" />
-
+![image11](./img/image11.png)
+<a name = "figure-11"></a>
 ##### Figure 11: Search center select and motion estimation.
-</div>
 
-<div align="center">
-  <a name = "figure-12"></a>
-  <img src="./img/image12.png" />
-
+![image12](./img/image12.png)
+<a name = "figure-12"></a>
 ##### Figure 12: Motion estimation dataflow.
-</div>
 
 #### Motion Estimation Integer Full-Search
 
@@ -875,12 +832,11 @@ construct the blocks as depicted in Figure 13. Blocks of size 4xN and
 Nx4 use the motion vectors of the parent block and their corresponding
 SAD is computed accordingly.
 
-<div align="center">
-  <a name = "figure-13"></a>
-  <img src="./img/image13.png" />
-
+![image13](./img/image13.png)
+<a name = "figure-13"></a>
 ##### Figure 13: Motion Estimation Integer Full-Search for the case of 64x64 SB. 4xN and Nx4 blocks are not included in this diagram to keep the presentation simple.
-</div>
+
+
 
 #### Motion Estimation Half-Pel Refinement
 
@@ -894,12 +850,9 @@ integer-resolution to half-pel-resolution as depicted in Figure 14. Since the
 MV pairs are restricted to the Search Area, only the Search Area in the Reference
 Picture needs to be interpolated. More details on the ME HPR are provided in the Appendix.
 
-<div align="center">
-  <a name = "figure-14"></a>
-  <img src="./img/image14.png" />
-
+![image14](./img/image14.png)
+<a name = "figure-14"></a>
 ##### Figure 14: Half-Pel Refinement for the case of 64x64 SB. 4xN and Nx4 blocks are not included in this diagram to keep the presentation simple.
-</div>
 
 #### Motion Estimation Quarter-Pel Refinement
 
@@ -912,12 +865,10 @@ Pairs are being refined to quarter-pel resolution and distortion estimates. A
 diagram of the ME QPR is shown in Figure 15. More details on the ME QPR are
 provided in the Appendix.
 
-<div align="center">
-  <a name = "figure-15"></a>
-  <img src="./img/image15.png" />
 
+![image15](./img/image15.png)
+<a name = "figure-15"></a>
 ##### Figure 15: Quarter-Pel Refinement for the case of 64x64 SB. 4xN and Nx4 blocks are not included in this diagram to keep the presentation simple.
-</div>
 
 ### Initial Rate Control Process
 
@@ -930,12 +881,9 @@ allowed. Note that through this process, until the subsequent Picture
 Manager process, no reference picture data has been used. The data flow
 in the Initial Rate Control process is illustrated in Figure 16.
 
-<div align="center">
-  <a name = "figure-16"></a>
-  <img src="./img/image16.png" />
-
+![image16](./img/image16.png)
+<a name = "figure-16"></a>
 ##### Figure 16: Initial Rate Control Process Dataflow.
-</div>
 
 ### Source-based Operations Process
 
@@ -955,12 +903,9 @@ and Reference Picture buffers to implement Pyramidal B GoP structures.
 Figure 17 shows the interaction of the Picture Management algorithm with
 the Enhanced Input Picture and Reference Picture buffers.
 
-<div align="center">
-  <a name = "figure-17"></a>
-  <img src="./img/image17.png" />
-
+![image17](./img/image17.png)
+<a name = "figure-17"></a>
 ##### Figure 17: Picture Management Dataflow.
-</div>
 
 The Picture Manager Processes runs in an asynchronous mode of operation
 where the Picture Management algorithm is run whenever an Enhanced Input
@@ -1006,24 +951,21 @@ considered for each block, it would be computationally very expensive to
 evaluate all options using all available tools to converge on the final
 partitioning and coding modes. Consequently, a staged decision
 approach is considered in SVT-AV1 as shown in Figure 18. The process
-starts with the very large number N<sub>0</sub> of candidates at the
+starts with the very large number ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{N_0}) of candidates at the
 input of partitioning decision stage 0 (PD Stage 0). At this stage, very elementary tools and
 performance measures are used in evaluating the fitness of the different
-candidates. The best N<sub>1</sub>\<\<N<sub>0</sub> of candidates are
+candidates. The best ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{N_1<<N_0}) of candidates are
 selected and passed on to PD stage 1. More sophisticated prediction and
 performance measure tools are considered in PD Stage 1 to evaluate all
-the N<sub>1</sub> input candidates and select the top
-N<sub>2</sub>\<\<N<sub>1</sub> from among the tested N<sub>1</sub>
+the ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{N_1}) input candidates and select the top
+![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{N_2<<N_1}) from among the tested ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{N_1})
 candidates. The same idea is applied in subsequent steps until PD Stage
-n where N<sub>n</sub> candidates and their corresponding coding modes
+n where ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{N_N})  candidates and their corresponding coding modes
 are selected.
 
-<div align="center">
-  <a name = "figure-18"></a>
-  <img src="./img/image18.png" />
-
+![image18](./img/image18.png)
+<a name = "figure-18"></a>
 ##### Figure 18. Partitioning decision stages.
-</div>
 
 An illustration of the different processing details that can take place
 in each PD stage are given in Figure 19. In this example, PD Stage 0 is
@@ -1038,21 +980,15 @@ last stage, only very few candidates as considered at the input and usually
 the full set of high-performance prediction tools are used to finalize the
 list of candidates.
 
-<div align="center">
-  <a name = "figure-19"></a>
-  <img src="./img/image19.png" />
-
+![image19](./img/image19.png)
+<a name = "figure-19"></a>
 ##### Figure 19. Example of the processing details in each PD stage.
-</div>
 
 The overall flow of the remaining tasks in the encoder is summarized in Figure 20.
 
-<div align="center">
-  <a name = "figure-20"></a>
-  <img src="./img/image20.png" />
-
+![image20](./img/image20.png)
+<a name = "figure-20"></a>
 ##### Figure 20. Partitioning, mode decision, encoding and filtering tasks.
-</div>
 
 ### Mode Decision Configuration Process
 
@@ -1072,60 +1008,20 @@ indicates the blocks that are considered in MD as a function of the
 picture depth mode.
 
 ##### <a name = "table-6"> Table 6. Description of the picture depth mode settings. </a>
-<table>
-<thead>
-<tr class="header">
-<th><strong>Picture Depth Mode (pic\_depth\_mode) </strong></th>
-<th><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>PIC_MULTI_PASS_PD_MODE_0 (0)</td>
-<td>Multi-pass PD Mode 0: PD0 | PD0_REFINEMENT</td>
-</tr>
-<tr class="even">
-<td>PIC_MULTI_PASS_PD_MODE_1 (1) </td>
-<td>Multi-pass PD Mode 1: PD0 | PD0_REFINEMENT | PD1 | PD1_REFINEMENT using SQ vs. NSQ only.</td>
-</tr>
-<tr class="odd">
-<td>PIC_MULTI_PASS_PD_MODE_2 (2)</td>
-<td>Multi-pass PD Mode 2: PD0 | PD0_REFINEMENT | PD1 | PD1_REFINEMENT using SQ vs. NSQ and SQ coeff info.
-</td>
-</tr>
-<tr class="even">
-<td>PIC_MULTI_PASS_PD_MODE_3 (3) </td>
-<td>Multi-pass PD Mode 3: PD0 | PD0_REFINEMENT | PD1 | PD1_REFINEMENT using SQ vs. NSQ and both SQ and NSQ coeff info.</td>
-</tr>
-<tr class="odd">
-<td>PIC_ALL_DEPTH_MODE (4)</td>
-<td>ALL sq and nsq: SB size -> 4x4.
-</td>
-</tr>
-<tr class="even">
-<td>PIC_ALL_C_DEPTH_MODE (5) </td>
-<td> ALL sq and nsq with control : SB size -> 4x4.</td>
-</tr>
-<tr class="odd">
-<td>PIC_SQ_DEPTH_MODE (6)</td>
-<td> ALL sq: SB size -> 4x4.
-</td>
-</tr>
-<tr class="even">
-<td>PIC_SQ_NON4_DEPTH_MODE (7)</td>
-<td> SQ: SB size -> 8x8.</td>
-</tr>
-<tr class="odd">
-<td>PIC_OPEN_LOOP_DEPTH_MODE (8) </td>
-<td> Early Inter Depth Decision: SB size -> 8x8.
-</td>
-</tr>
-<tr class="even">
-<td>PIC_SB_SWITCH_DEPTH_MODE (9)</td>
-<td> Adaptive Depth Partitioning. </td>
-</tr>
-</tbody>
-</table>
+
+|**Picture Depth Mode (pic\_depth\_mode)**|**Description**|
+|--- |--- |
+|PIC_MULTI_PASS_PD_MODE_0 (0)|Multi-pass PD Mode 0: PD0, PD0_REFINEMENT|
+|PIC_MULTI_PASS_PD_MODE_1 (1)|Multi-pass PD Mode 1: PD0, PD0_REFINEMENT, PD1, PD1_REFINEMENT using SQ vs. NSQ only.|
+|PIC_MULTI_PASS_PD_MODE_2 (2)|Multi-pass PD Mode 2: PD0, PD0_REFINEMENT, PD1, PD1_REFINEMENT using SQ vs. NSQ and SQ coeff info.|
+|PIC_MULTI_PASS_PD_MODE_3 (3)|Multi-pass PD Mode 3: PD0, PD0_REFINEMENT, PD1, PD1_REFINEMENT using SQ vs. NSQ and both SQ and NSQ coeff info.|
+|PIC_ALL_DEPTH_MODE (4)|ALL sq and nsq: SB size -> 4x4.|
+|PIC_ALL_C_DEPTH_MODE (5)|ALL sq and nsq with control : SB size -> 4x4.|
+|PIC_SQ_DEPTH_MODE (6)|ALL sq: SB size -> 4x4.|
+|PIC_SQ_NON4_DEPTH_MODE (7)|SQ: SB size -> 8x8.|
+|PIC_OPEN_LOOP_DEPTH_MODE (8)|Early Inter Depth Decision: SB size -> 8x8.|
+|PIC_SB_SWITCH_DEPTH_MODE (9)|Adaptive Depth Partitioning.|
+
 
 ##### <a name = "table-7"> Table 7. Blocks to be considered in MD as a function of picture depth mode. </a>
 | **Picture Depth Mode (pic\_depth\_mode)**             | **Description**                                                                       |
@@ -1134,12 +1030,13 @@ picture depth mode.
 | PIC\_MULTI\_PASS\_PD\_MODE_1 (1)                      | All blocks are passed on to MD.                                                       |
 | PIC\_MULTI\_PASS\_PD\_MODE_2 (2)                      | All blocks are passed on to MD.                                                       |
 | PIC\_MULTI\_PASS\_PD\_MODE_3 (3)                      | All blocks are passed on to MD.                                                       |
-| PIC\_ALL\_DEPTH\_MODE (4)                             | All blocks are passed on to MD.                                                       |
-| PIC\_ALL\_C\_DEPTH\_MODE (5)                          | All blocks are passed on to MD with some restrictions.                                |
-| PIC\_SQ\_DEPTH\_MODE (6)                              | Only square blocks are passed on to MD.                                               |
-| PIC\_SQ\_NON4\_DEPTH\_MODE (7)                        | Only square blocks that are at least 8x8 in size are passed on to MD.                 |
-| PIC\_OPEN\_LOOP\_DEPTH\_MODE (8)                      | Generate a partitioning prediction to be passed on to MD.                             |
-| PIC\_SB\_SWITCH\_DEPTH\_MODE (9)                      | Adaptive Depth Partitioning> The SB partitioning method is determined on a SB-basis.  |
+| PIC\_ALL\_DEPTH\_MODE (4)    | All blocks are passed on to MD.                                                       |
+| PIC\_ALL\_C\_DEPTH\_MODE (5) | All blocks are passed on to MD with some restrictions. |
+| PIC\_SQ\_DEPTH\_MODE (6)     | Only square blocks are passed on to MD. |
+| PIC\_SQ\_NON4\_DEPTH\_MODE (7)      | Only square blocks that are at least 8x8 in size are passed on to MD.      |
+| PIC\_OPEN\_LOOP\_DEPTH\_MODE (8)    | Generate a partitioning prediction to be passed on to MD.       |
+| PIC\_SB\_SWITCH\_DEPTH\_MODE (9)    | Adaptive Depth Partitioning> The SB partitioning method is determined on a SB-basis.  |
+
 
 ### EncDec Process
 
@@ -1161,12 +1058,9 @@ Top block, Left block, and Top-left block as illustrated in Figure 21.
 Also note that the neighbor array design can store either mode
 information directly or reference data indirectly (e.g. pointers).
 
-<div align="center">
-  <a name = "figure-21"></a>
-  <img src="./img/image21.png" />
-
+![image21](./img/image21.png)
+<a name = "figure-21"></a>
 ##### Figure 21: Neighbor array structure.
-</div>
 
 The Neighbor Array design hinges on how its memory locations are
 accessed and updated. The Left Neighbor Array is approximately one SB
@@ -1197,12 +1091,9 @@ information. The three neighbor arrays contain a snapshot of the mode
 information currently stored in each block position at the time that the
 block labeled “Current Block” is being processed.
 
-<div align="center">
-  <a name = "figure-22"></a>
-  <img src="./img/image22.png" />
-
+![image22](./img/image22.png)
+<a name = "figure-22"></a>
 ##### Figure 22: Neighbor array data illustration.
-</div>
 
 #### Rate Estimation Tables
 
@@ -1259,7 +1150,7 @@ there are nine classes corresponding to Intra, Inter (NEWMV), MV Pred
 (Nearest, Near…), Inter-Inter compound, Intra-Inter compound, OBMC,
 Filter Intra, Palette prediction and Global Motion candidates. Moreover,
 multiple MD stages are involved in each PD stage, where the complexity
-of the MD stages increases from MD Stage 0 to MD Stage n<sub>MD</sub> due to the
+of the MD stages increases from MD Stage 0 to MD Stage ![latex_i^th](http://latex.codecogs.com/gif.latex?\mathrm{n_{MD}}) due to the
 use of more accurate prediction tools and more accurate performance
 measures. Once the input candidates to a given MD stage are processed,
 only the best among the processed candidates are passed on to the next
@@ -1277,12 +1168,9 @@ partitioning and mode decisions, and not necessarily residuals to be
 coded and transmitted in the bitstream, which is the task performed by
 the encode pass discussed next.
 
-<div align="center">
-  <a name = "figure-23"></a>
-  <img src="./img/image23.png" />
-
+![image23](./img/image23.png)
+<a name = "figure-23"></a>
 ##### Figure 23. MD flow in a single PD stage.
-</div>
 
 ##### Encode SB
 
@@ -1396,6 +1284,7 @@ process takes as input the bitstreams for each frame as well as sequence
 and picture level coding settings and produces the final bitstream in
 picture-decoding order.
 
+
 ## Detailed Feature Implementation Design Appendices
 
 The following appendices highlight the design and implementation of features in much greater detail than this document.
@@ -1414,7 +1303,9 @@ The following appendices highlight the design and implementation of features in 
 - [Restoration Filter Appendix](Appendix Restoration Filter)
 - [Subpel Interpolation in the Open Loop Motion Estimation Appendix](Appendix Subpel Interpolation Open Loop ME)
 
+
 ## References
+
 
 ## Legal Disclaimer
 
